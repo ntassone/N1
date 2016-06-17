@@ -1,88 +1,97 @@
 import React from 'react';
-// import {Contenteditable,
-//         Flexbox,
-//         EditableList} from 'nylas-component-kit';
-import {Flexbox,
-        RetinaImg} from 'nylas-component-kit';
-import {AccountStore} from 'nylas-exports';
-// import SignatureStore from './signature-store';
-// import SignatureActions from './signature-actions';
-
-const signatures = [
-//   {
-//   title: 'my sig',
-//   body: 'something',
-// }
-]
+import {
+  Flexbox,
+  RetinaImg,
+  EditableList,
+  Contenteditable,
+} from 'nylas-component-kit';
+import SignatureActions from './signature-actions';
 
 export default class PreferencesSignatures extends React.Component {
   static displayName = 'PreferencesSignatures';
 
   constructor() {
     super()
-    this.state = this._getStateFromStores()
-  }
-
-  _getStateFromStores() {
-    const accounts = AccountStore.accounts()
-    const state = this.state || {}
-    let {currentAccount} = state
-    if (!accounts.find(acct => acct === currentAccount)) {
-      currentAccount = accounts[0];
-    }
-    // const signatures = SignatureStore
-    return {
-      accounts: accounts,
-      currentAccount: currentAccount,
-      signatures: signatures,
+    this.state = {
+      signatures: [],
+      selectedSignature: null,
     }
   }
 
-  // _onAddSignature(){}
-  // _renderListItemContent(){}
+  _renderListItemContent(sig) {
+    // return div and add styles
+    return sig.title
+    // return (<div className="item-rule-disabled">{sig.title}</div>);
+  }
 
-  _renderAccountPicker() {
-    console.log("STATE: ", this.state.currentAccount)
-    const options = this.state.accounts.map(account =>
-      <option value={account.accountId} key={account.accountId}>{account.label}</option>
-    );
+  _onEditSignature = () => {
+    // const html = event.target.value;
+    // this.setState({currentSignature: html});
+    //
+    // SignatureActions.setSignatureForAccountId({
+    //   accountId: this.state.currentAccountId,
+    //   signature: html,
+    // });
+  }
 
+  _renderEditableSignature() {
+    const selected = this.state.selectedSignature ? this.state.selectedSignature.body : ""
     return (
-      <select
-        value={this.state.currentAccount.accountId}
-        style={{margin: 0, minWidth: 200}}
-      >
-        {options}
-      </select>
-    );
+      <div className="signature-wrap">
+        <Contenteditable
+          ref="signatureInput"
+          value={selected}
+          spellcheck={false}
+          onChange={this._onEditSignature}
+        />
+      </div>
+    )
   }
+
+  _onCreateButtonClick = () => {
+    this._onAddSignature()
+  }
+
+  _onAddSignature = (sig = "Untitled") => {
+    const newSignatures = this.state.signatures.concat([{title: sig, body: 'Add Default'}])
+    this.setState({signatures: newSignatures})
+  }
+
+  _onDeleteSignature = (signature) => {
+    const updatedSignatures = this.state.signatures.filter(sig => sig !== signature)
+    this.setState({signatures: updatedSignatures})
+  }
+
 
   _renderSignatures() {
-    // if (this.state.signatures.length === 0) {
+    if (this.state.signatures.length === 0) {
+      return (
+        <div className="empty-list">
+          <RetinaImg
+            className="icon-signature"
+            name="signatures-big.png"
+            mode={RetinaImg.Mode.ContentDark}
+          />
+          <h2>No signatures</h2>
+          <button className="btn btn-small" onClick={this._onCreateButtonClick}>
+            Create a new signature
+          </button>
+        </div>
+      );
+    }
     return (
-      <div className="empty-list">
-        <RetinaImg
-          className="icon-signature"
-          name="rules-big.png"
-          mode={RetinaImg.Mode.ContentDark}
+      <Flexbox>
+        <EditableList
+          showEditIcon
+          className="signature-list"
+          items={this.state.signatures}
+          itemContent={this._renderListItemContent}
+          onCreateItem={this._onAddSignature}
+          onDeleteItem={this._onDeleteSignature}
         />
-        <h2>No signatures</h2>
-        <button className="btn btn-small">
-          Create a new signature
-        </button>
-      </div>
-    );
-    // }
-    // return (
-    //   <Flexbox>
-    //     <EditableList
-    //       showEditIcon
-    //       className="signature-list"
-    //       items={this.state.signatures}
-    //       itemContent={this._renderListItemContent}
-    //     />
-    //   </Flexbox>
-    // )
+        {this._renderEditableSignature()}
+      </Flexbox>
+    )
   }
 
   render() {

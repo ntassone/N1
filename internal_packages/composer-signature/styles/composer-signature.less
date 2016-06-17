@@ -13,6 +13,7 @@
 
     .icon-signature {
       margin-top: 80px;
+      zoom: 1;
     }
 
     h2 {
@@ -24,24 +25,44 @@
     }
   }
 
-  // .signature-wrap {
-  //   position: relative;
-  //   border: 1px solid @input-border-color;
-  //   background-color: @white;
-  //   padding: 10px;
-  //   margin-top: 20px;
-  //   min-height: 200px;
-  //   display: flex;
-  //   flex-direction: column;
-  //
-  //   textarea {
-  //     border: 0;
-  //     padding: 0;
-  //     flex: 1;
-  //     font-family: monospace;
-  //     font-size: 0.9em;
-  //   }
-  // }
+
+  .signature-list {
+    position: relative;
+    height: inherit;
+    width: inherit;
+
+    .items-wrapper {
+      min-width:200px;
+      height: 350px;
+    }
+    .item-rule-disabled {
+      color: @color-error;
+      padding: 4px 10px;
+      border-bottom: 1px solid @border-color-divider;
+    }
+    .selected .item-rule-disabled {
+      color: @component-active-bg;
+    }
+  }
+
+  .signature-wrap {
+    position: relative;
+    border: 1px solid @input-border-color;
+    background-color: @white;
+    padding: 10px;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    textarea {
+      border: 0;
+      padding: 0;
+      flex: 1;
+      font-family: monospace;
+      font-size: 0.9em;
+    }
+  }
   //
   // .section-body {
   //   padding: 10px 0 0 0;
