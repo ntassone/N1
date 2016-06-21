@@ -5,15 +5,15 @@
   margin: 0 auto;
 
   .empty-list {
-    height: 376px;
+    height: 300px;
     width: inherit;
     background-color: @background-primary;
     border: 1px solid @border-color-divider;
     text-align: center;
+    padding: 60px;
 
     .icon-signature {
-      margin-top: 80px;
-      zoom: 1;
+      height: 120px;
     }
 
     h2 {
@@ -33,7 +33,7 @@
 
     .items-wrapper {
       min-width:200px;
-      height: 350px;
+      height: 264px;
     }
     .item-rule-disabled {
       color: @color-error;
@@ -43,74 +43,59 @@
     .selected .item-rule-disabled {
       color: @component-active-bg;
     }
+
+    .editable-item {
+      padding: 8px 10px;
+      border-bottom: none;
+    }
+
+    .btn-editable-list {
+      height: 35px;
+      width: 35px;
+      line-height: 35px;
+    }
   }
 
   .signature-wrap {
     position: relative;
     border: 1px solid @input-border-color;
     background-color: @white;
-    padding: 10px;
     min-height: 200px;
+    height: 300px;
     display: flex;
     flex-direction: column;
     width: 100%;
 
     textarea {
+      padding: 10px;
       border: 0;
-      padding: 0;
       flex: 1;
       font-family: monospace;
       font-size: 0.9em;
     }
+
+    .contenteditable {
+      padding: 10px;
+    }
+
+    .editable-toolbar {
+      border-top: 1px solid @input-border-color;
+      padding: 6px;
+
+      .render-mode {
+        float: right;
+      }
+
+      .account-picker {
+        display: inline-block;
+        color: @text-color-subtle;
+
+        select {
+          margin: 0;
+        }
+      }
+    }
+
   }
-  //
-  // .section-body {
-  //   padding: 10px 0 0 0;
-  //
-  //   .menu {
-  //     border: solid thin #CCC;
-  //     margin-right: 5px;
-  //     min-height: 200px;
-  //     .menu-items {
-  //       margin:0;
-  //       padding:0;
-  //       list-style: none;
-  //
-  //       li { padding: 6px; }
-  //     }
-  //   }
-  //   .menu-horizontal {
-  //     height: 100%;
-  //     .menu-items {
-  //       height:100%;
-  //       margin: 0;
-  //       padding: 0;
-  //       list-style: none;
-  //       li {
-  //         text-align:center;
-  //         width:40px;
-  //         display:inline-block;
-  //         padding:8px 16px 8px 16px;
-  //         border-right: solid thin #CCC;
-  //       }
-  //     }
-  //   }
-  //   .signature-area {
-  //     border: solid thin #CCC;
-  //     min-height: 200px;
-  //   }
-  //   .menu-footer {
-  //     border: solid thin #CCC;
-  //     overflow: auto;
-  //   }
-  //   .signature-footer {
-  //     border: solid thin #CCC;
-  //     overflow: auto;
-  //
-  //     .edit-html-button {
-  //       float: right;
-  //       margin: 6px;
-  //     }
-  //   }
-  // }
+
 }
