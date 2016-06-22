@@ -14,24 +14,25 @@ class SignatureStore extends NylasStore {
       SignatureActions.updateSignatureTitle.listen(this._onEditSignatureTitle),
       SignatureActions.updateSignatureBody.listen(this._onEditSignatureBody),
       SignatureActions.selectSignature.listen(this._onSelectSignature),
+      SignatureActions.toggleAccount.listen(this._onToggleAccount),
     ];
 
     // ** check if already exists before overwritting
-    this.signatureList = {} || NylasEnv.config.get(`nylas.signatures`) || {}
+    this.signatures = {} || NylasEnv.config.get(`nylas.signatures`) || {}
     this.selectedSignatureId = null
   }
 
   deactivate() {
-    NylasEnv.config.set(`nylas.signatures`, this.signatureList)
+    NylasEnv.config.set(`nylas.signatures`, this.signatures)
     this.unsubscribers.forEach(unsub => unsub());
   }
 
-  signatures() {
-    return this.signatureList;
+  getSignatures() {
+    return this.signatures;
   }
 
   selectedSignature = () => {
-    const sigs = this.signatures()
+    const sigs = this.getSignatures()
     return sigs[this.selectedSignatureId]
   }
 
@@ -50,30 +51,51 @@ class SignatureStore extends NylasStore {
   }
 
   _onRemoveSignature = (signatureToDelete) => {
-    this.signatureList = this._removeByKey(this.signatureList, signatureToDelete.id)
+    this.signatures = this._removeByKey(this.signatures, signatureToDelete.id)
 
     this.trigger()
   }
 
-  // create method to query signatures - all signatures
-  // when this calls trigger() -- onSignaturesChange willeb called
-
   _onAddSignature = (sigTitle = "Untitled") => {
     const newId = Utils.generateTempId()
-    this.signatureList[newId] = {id: newId, title: sigTitle, body: DefaultSignature}
+    const allAccounts = AccountStore.accounts()
+    this.signatures[newId] = {id: newId, title: sigTitle, body: DefaultSignature, defaultFor: {}}
     this.selectedSignatureId = newId
+    for (const account of allAccounts) {
+      this.signatures[newId].defaultFor[account.id] = false
+    }
     this.trigger()
   }
 
   _onEditSignatureTitle = (editedTitle, oldSig) => {
-    this.signatureList[oldSig.id].title = editedTitle
+    this.signatures[oldSig.id].title = editedTitle
 
     this.trigger()
   }
 
 
   _onEditSignatureBody = (editedBody, oldSig) => {
-    this.signatureList[oldSig.id].body = editedBody
+    this.signatures[oldSig.id].body = editedBody
+
+    this.trigger()
+  }
+
+  _onToggleAccount = (accountId) => {
+    // figure out if toggle on or off - if account already in selectedSignatures list => toggle off, else toggle on
+    const toggle = !this.signatures[this.selectedSignatureId].defaultFor[accountId]
+    // if toggle this account on, go through all other sigs and toggle this account off
+    if (toggle) {
+      for (const signatureId of Object.keys(this.signatures)) {
+        if (signatureId === this.selectedSignatureId) {
+          this.signatures[signatureId].defaultFor[accountId] = true
+        } else {
+          this.signatures[signatureId].defaultFor[accountId] = false
+        }
+      }
+    } else {
+      // if toggle this account off, just go to selectedSignature
+      this.signatures[this.selectedSignatureId].defaultFor[accountId] = false
+    }
 
     this.trigger()
   }

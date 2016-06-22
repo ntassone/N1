@@ -20,14 +20,10 @@ class MultiselectDropdown extends Component {
 // where do my styles go?
 // want a styled drop down that lets you select multiple options and packages them
 
-  _onBoxClick() {
-    this.props.onToggleItem
-  }
-
   static propTypes = {
     className: PropTypes.string,
     items: PropTypes.array.isRequired,
-    selectedItems: PropTypes.array.isRequired,
+    selectedItems: PropTypes.array,
     onToggleItem: PropTypes.func,
   }
 
@@ -35,28 +31,24 @@ class MultiselectDropdown extends Component {
     className: '',
     items: [],
     selectedItems: [],
+    onToggleItem: () => {},
   }
 
-
-  _renderOption = (item, onAccountClick, selectedSig) => {
-    let classes = ""
-    if (selectedSig) {
-      classes = classNames({
-        selected: selectedSig.accounts.indexOf(item.accountId) > -1,
-      })
-    }
-    console.log("ssi: ", selectedSig)
-    return (
-      <option value={item.id} className={classes} onClick={onAccountClick} key={item.accountId}>{item.label}</option>
-    )
+  _onItemClick = (e) => {
+    const accountId = e.target.value
+    this.props.onToggleItem(accountId)
   }
+
 
   render() {
-    const {className, items, selected, onAccountClick, selectedSig} = this.props
+    const {className, items} = this.props
 
+    const options = items.map(item =>
+      <option value={item.id} key={item.accountId} onClick={this._onItemClick}>{item.label}</option>
+    )
     return (
-      <select multiple defaultValue={[selected]} className={className} >
-        {items.map((item) => this._renderOption(item, onAccountClick, selectedSig))}
+      <select multiple className={className} >
+        {options}
       </select>
     )
   }

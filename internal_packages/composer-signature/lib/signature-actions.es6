@@ -6,6 +6,7 @@ const ActionNames = [
   'updateSignatureTitle',
   'updateSignatureBody',
   'selectSignature',
+  'toggleAccount',
 ];
 
 const Actions = Reflux.createActions(ActionNames);

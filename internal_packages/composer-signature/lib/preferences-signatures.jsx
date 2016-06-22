@@ -1,11 +1,11 @@
 import React from 'react';
-import _ from 'underscore';
 
 import {
     Flexbox,
     RetinaImg,
     EditableList,
     Contenteditable,
+    MultiselectDropdown,
 } from 'nylas-component-kit';
 import SignatureActions from './signature-actions';
 import SignatureStore from './signature-store'
@@ -15,7 +15,8 @@ import {AccountStore} from 'nylas-exports';
 export default class PreferencesSignatures extends React.Component {
   static displayName = 'PreferencesSignatures';
 
-    // Signature schema: {id: {id: id, title: title, body: body}}
+    // Signature schema: {id: {id: id, title: title, body: body, defaultFor: {}}}
+    // Default For schema: {id: true, id: false}
 
   constructor() {
     super()
@@ -38,7 +39,7 @@ export default class PreferencesSignatures extends React.Component {
   }
 
   _getStateFromStores() {
-    const signatures = SignatureStore.signatures()
+    const signatures = SignatureStore.getSignatures()
     const accounts = AccountStore.accounts()
     const selected = SignatureStore.selectedSignature()
 
@@ -50,30 +51,6 @@ export default class PreferencesSignatures extends React.Component {
     }
   }
 
-
-  _renderListItemContent(sig) {
-      // return div and add styles
-    return sig.title
-      // return (<div className="item-rule-disabled">{sig.title}</div>);
-  }
-
-  _renderSignatureToolbar() {
-    const action = () => {
-      const toggle = !this.state.editAsHTML
-      this.setState({editAsHTML: toggle})
-    };
-    return (
-      <div className="editable-toolbar">
-        <div className="account-picker">
-            Default for: {this._renderAccountPicker()}
-        </div>
-        <div className="render-mode">
-          <input type="checkbox" id="render-mode" checked={this.state.editAsHTML} onClick={action} />
-          <label>Edit raw HTML</label>
-        </div>
-      </div>
-    )
-  }
 
   _onCreateButtonClick = () => {
     this._onAddSignature()
@@ -100,6 +77,10 @@ export default class PreferencesSignatures extends React.Component {
     SignatureActions.selectSignature(sig.id)
   }
 
+  _onToggleAccount = (accountId) => {
+    SignatureActions.toggleAccount(accountId)
+  }
+
   _signaturesToArray() {
     const signatures = this.state.signatures
     const array = []
@@ -111,16 +92,38 @@ export default class PreferencesSignatures extends React.Component {
     return array
   }
 
-  _renderAccountPicker() {
-    const options = this.state.accounts.map(account =>
-      <option value={account.id} key={account.id}>{account.label}</option>
-    );
+  _renderListItemContent(sig) {
+    // return div and add styles
+    return sig.title
+    // return (<div className="item-rule-disabled">{sig.title}</div>);
+  }
 
+  _renderSignatureToolbar() {
+    const action = () => {
+      const toggle = !this.state.editAsHTML
+      this.setState({editAsHTML: toggle})
+    };
     return (
-      <select value={this.state.currentAccountId} style={{minWidth: 200}}>
-          {options}
-      </select>
-    );
+      <div className="editable-toolbar">
+        <div className="account-picker">
+          Default for: {this._renderAccountPicker()}
+        </div>
+        <div className="render-mode">
+          <input type="checkbox" id="render-mode" checked={this.state.editAsHTML} onClick={action} />
+          <label>Edit raw HTML</label>
+        </div>
+      </div>
+    )
+  }
+
+  _renderAccountPicker() {
+    return (
+      <MultiselectDropdown
+        className="account-dropdown"
+        items={this.state.accounts}
+        onToggleItem={this._onToggleAccount}
+      />
+    )
   }
 
   _renderEditableSignature() {
@@ -182,11 +185,25 @@ export default class PreferencesSignatures extends React.Component {
     )
   }
 
+  // _renderSignatureTree() {
+  //   const sigJSON = this._signaturesToArray().map(sig =>
+  //     <div key={sig.id}>
+  //       <pre>
+  //         {JSON.stringify(sig, null, 2)}
+  //       </pre>
+  //     </div>
+  //   )
+  //
+  //   return (
+  //     <section>{sigJSON}</section>
+  //   )
+  // }
+
   render() {
     return (
       <div className="container-signatures">
         <section>
-            {this._renderSignatures()}
+          {this._renderSignatures()}
         </section>
       </div>
     )
