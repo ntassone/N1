@@ -19,14 +19,6 @@ export default class PreferencesSignatures extends React.Component {
 
   constructor() {
     super()
-    // const signatures = this._getStateFromStores()
-    // this.state = {
-    //   signatures: signatures,
-    //   selectedSignature: null,
-    //   editAsHTML: false,
-    //   accounts: AccountStore.accounts(),
-    // }
-
     this.state = this._getStateFromStores()
   }
 
@@ -46,9 +38,9 @@ export default class PreferencesSignatures extends React.Component {
   }
 
   _getStateFromStores() {
-    const signatures = SignatureStore._signatures()
+    const signatures = SignatureStore.signatures()
     const accounts = AccountStore.accounts()
-    const selected = this.state && this.state.selectedSignature ? _.findWhere(signatures, {id: this.state.selectedSignature.id}) : signatures[0];
+    const selected = SignatureStore.selectedSignature()
 
     return {
       signatures: signatures,
@@ -104,15 +96,13 @@ export default class PreferencesSignatures extends React.Component {
     SignatureActions.updateSignatureBody(editedSig.target.value, this.state.selectedSignature)
   }
 
-
   _onSelectSignature = (sig) => {
-    this.setState({selectedSignature: sig})
+    SignatureActions.selectSignature(sig.id)
   }
 
   _signaturesToArray() {
     const signatures = this.state.signatures
     const array = []
-    console.log("signatures: ", signatures)
     if (signatures) {
       for (const key of Object.keys(signatures)) {
         array.push(signatures[key])
@@ -156,8 +146,6 @@ export default class PreferencesSignatures extends React.Component {
 
   _renderSignatures() {
     const sigArr = this._signaturesToArray()
-    console.log("state: ", this.state)
-    console.log("sigarr: ", sigArr)
     if (sigArr.length === 0) {
       return (
         <div className="empty-list">

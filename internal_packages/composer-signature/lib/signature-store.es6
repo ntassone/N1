@@ -13,17 +13,31 @@ class SignatureStore extends NylasStore {
       SignatureActions.removeSignature.listen(this._onRemoveSignature),
       SignatureActions.updateSignatureTitle.listen(this._onEditSignatureTitle),
       SignatureActions.updateSignatureBody.listen(this._onEditSignatureBody),
-      // Actions.draftParticipantsChanged.listen(this._onParticipantsChanged),
+      SignatureActions.selectSignature.listen(this._onSelectSignature),
     ];
-    NylasEnv.config.set(`nylas.signatures`, {})
+
+    // ** check if already exists before overwritting
+    this.signatureList = {} || NylasEnv.config.get(`nylas.signatures`) || {}
+    this.selectedSignatureId = null
   }
 
   deactivate() {
+    NylasEnv.config.set(`nylas.signatures`, this.signatureList)
     this.unsubscribers.forEach(unsub => unsub());
   }
 
-  _signatures = () => {
-    return NylasEnv.config.get(`nylas.signatures`);
+  signatures() {
+    return this.signatureList;
+  }
+
+  selectedSignature = () => {
+    const sigs = this.signatures()
+    return sigs[this.selectedSignatureId]
+  }
+
+  _onSelectSignature = (id) => {
+    this.selectedSignatureId = id
+    this.trigger()
   }
 
   _removeByKey = (obj, keyToDelete) => {
@@ -36,9 +50,7 @@ class SignatureStore extends NylasStore {
   }
 
   _onRemoveSignature = (signatureToDelete) => {
-    const allSigs = this._signatures()
-    const updatedSigs = this._removeByKey(allSigs, signatureToDelete.id)
-    NylasEnv.config.set(`nylas.signatures`, updatedSigs)
+    this.signatureList = this._removeByKey(this.signatureList, signatureToDelete.id)
 
     this.trigger()
   }
@@ -48,47 +60,24 @@ class SignatureStore extends NylasStore {
 
   _onAddSignature = (sigTitle = "Untitled") => {
     const newId = Utils.generateTempId()
-    const updatedSigs = this._signatures()
-    updatedSigs[newId] = {id: newId, title: sigTitle, body: DefaultSignature}
-    NylasEnv.config.set(`nylas.signatures`, updatedSigs)
-
+    this.signatureList[newId] = {id: newId, title: sigTitle, body: DefaultSignature}
+    this.selectedSignatureId = newId
     this.trigger()
   }
 
   _onEditSignatureTitle = (editedTitle, oldSig) => {
-    const updatedSigs = NylasEnv.config.get(`nylas.signatures`);
-    updatedSigs[oldSig.id].title = editedTitle
-    NylasEnv.config.set(`nylas.signatures`, updatedSigs)
+    this.signatureList[oldSig.id].title = editedTitle
 
     this.trigger()
   }
 
 
   _onEditSignatureBody = (editedBody, oldSig) => {
-    const updatedSigs = NylasEnv.config.get(`nylas.signatures`);
-    updatedSigs[oldSig.id].body = editedBody
-    NylasEnv.config.set(`nylas.signatures`, updatedSigs)
+    this.signatureList[oldSig.id].body = editedBody
 
     this.trigger()
   }
 
-  // _onParticipantsChanged = (draftClientId, changes) => {
-  //   if (!changes.from) { return; }
-  //
-  //   DraftStore.sessionForClientId(draftClientId).then((session) => {
-  //     const draft = session.draft();
-  //     const {accountId} = AccountStore.accountForEmail(changes.from[0].email);
-  //     const signature = this.signatureForAccountId(accountId);
-  //
-  //     const body = SignatureUtils.applySignature(draft.body, signature);
-  //     session.changes.add({body});
-  //   });
-  // }
-
-  // _onSetSignatureForAccountId = ({signature, accountId}) => {
-  //   // NylasEnv.config.set is internally debounced 100ms
-  //   NylasEnv.config.set(`nylas.account-${accountId}.signature`, signature)
-  // }
 }
 
 export default new SignatureStore();
