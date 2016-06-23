@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import classNames from 'classnames';
+import ReactDOM from 'react-dom';
 
 /**
 Renders a drop down of items that can have multiple selected
@@ -34,9 +34,19 @@ class MultiselectDropdown extends Component {
     onToggleItem: () => {},
   }
 
-  // _isHighlighted = () => {
-  //
-  // }
+  constructor() {
+    super()
+    this.state = {
+      selectingItems: false,
+    }
+  }
+
+  componentDidUpdate() {
+    if (ReactDOM.findDOMNode(this.refs.select)) {
+      ReactDOM.findDOMNode(this.refs.select).focus()
+    }
+  }
+
 
   _onItemClick = (e) => {
     const accountId = e.target.value
@@ -49,19 +59,42 @@ class MultiselectDropdown extends Component {
     )
   }
 
+  _onExpandDropdown = () => {
+    this.setState({selectingItems: true})
+  }
+
+  _onCollapseDropdown = () => {
+    this.setState({selectingItems: false})
+  }
+
+  _renderCollapsed = (numSelected) => {
+    return (
+      <button value="number-selected" key="number-selected" onClick={this._onExpandDropdown}>{numSelected} Accounts</button>
+    )
+  }
+
+  _renderExpanded = (items, selectedItemArr, className) => {
+    const options = items.map(item => this._renderItem(item))
+    return (
+      <select multiple className={`nylas-multiselect-dropdown ${className}`} ref="select" value={selectedItemArr} onBlur={this._onCollapseDropdown} readOnly>
+        {options}
+      </select>
+    )
+  }
 
   render() {
     const {className, items, itemSelection} = this.props
-    const forSelectValue = []
+    const selectedItemArr = []
     for (const accountId of Object.keys(itemSelection)) {
-      if (itemSelection[accountId]) forSelectValue.push(accountId)
+      if (itemSelection[accountId]) selectedItemArr.push(accountId)
     }
-    const options = items.map(item => this._renderItem(item))
+    if (this.state.selectingItems) {
+      return (
+        this._renderExpanded(items, selectedItemArr, className)
+      )
+    }
     return (
-      <select multiple className={`nylas-multiselect-dropdown ${className}`} value={forSelectValue} readOnly>
-        <option value="number-selected" key="number-selected">{forSelectValue.length} Accounts</option>
-        {options}
-      </select>
+      this._renderCollapsed(selectedItemArr.length)
     )
   }
 }
