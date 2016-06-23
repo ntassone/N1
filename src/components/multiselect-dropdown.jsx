@@ -23,31 +23,43 @@ class MultiselectDropdown extends Component {
   static propTypes = {
     className: PropTypes.string,
     items: PropTypes.array.isRequired,
-    selectedItems: PropTypes.array,
+    itemSelection: PropTypes.object,
     onToggleItem: PropTypes.func,
   }
 
   static defaultProps = {
     className: '',
     items: [],
-    selectedItems: [],
+    itemSelection: {},
     onToggleItem: () => {},
   }
+
+  // _isHighlighted = () => {
+  //
+  // }
 
   _onItemClick = (e) => {
     const accountId = e.target.value
     this.props.onToggleItem(accountId)
   }
 
-
-  render() {
-    const {className, items} = this.props
-
-    const options = items.map(item =>
+  _renderItem = (item) => {
+    return (
       <option value={item.id} key={item.accountId} onClick={this._onItemClick}>{item.label}</option>
     )
+  }
+
+
+  render() {
+    const {className, items, itemSelection} = this.props
+    const forSelectValue = []
+    for (const accountId of Object.keys(itemSelection)) {
+      if (itemSelection[accountId]) forSelectValue.push(accountId)
+    }
+    const options = items.map(item => this._renderItem(item))
     return (
-      <select multiple className={className} >
+      <select multiple className={`nylas-multiselect-dropdown ${className}`} value={forSelectValue} readOnly>
+        <option value="number-selected" key="number-selected">{forSelectValue.length} Accounts</option>
         {options}
       </select>
     )

@@ -121,6 +121,7 @@ export default class PreferencesSignatures extends React.Component {
       <MultiselectDropdown
         className="account-dropdown"
         items={this.state.accounts}
+        itemSelection={this.state.signatures[this.state.selectedSignature.id].defaultFor}
         onToggleItem={this._onToggleAccount}
       />
     )
@@ -185,19 +186,19 @@ export default class PreferencesSignatures extends React.Component {
     )
   }
 
-  // _renderSignatureTree() {
-  //   const sigJSON = this._signaturesToArray().map(sig =>
-  //     <div key={sig.id}>
-  //       <pre>
-  //         {JSON.stringify(sig, null, 2)}
-  //       </pre>
-  //     </div>
-  //   )
-  //
-  //   return (
-  //     <section>{sigJSON}</section>
-  //   )
-  // }
+  _renderSignatureTree() {
+    const sigJSON = this._signaturesToArray().map(sig =>
+      <div key={sig.id}>
+        <pre>
+          {JSON.stringify(sig, null, 2)}
+        </pre>
+      </div>
+    )
+
+    return (
+      <section>{sigJSON}</section>
+    )
+  }
 
   render() {
     return (
@@ -205,6 +206,7 @@ export default class PreferencesSignatures extends React.Component {
         <section>
           {this._renderSignatures()}
         </section>
+        {this._renderSignatureTree()}
       </div>
     )
   }
