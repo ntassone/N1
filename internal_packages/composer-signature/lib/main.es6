@@ -1,7 +1,6 @@
-import {PreferencesUIStore, ExtensionRegistry} from 'nylas-exports';
+import {PreferencesUIStore, ExtensionRegistry, SignatureStore} from 'nylas-exports';
 
 import SignatureComposerExtension from './signature-composer-extension';
-import SignatureStore from './signature-store';
 import PreferencesSignatures from "./preferences-signatures";
 
 export function activate() {

@@ -7,9 +7,7 @@ import {
     Contenteditable,
     MultiselectDropdown,
 } from 'nylas-component-kit';
-import SignatureActions from './signature-actions';
-import SignatureStore from './signature-store'
-import {AccountStore} from 'nylas-exports';
+import {AccountStore, SignatureStore, Actions} from 'nylas-exports';
 
 
 export default class PreferencesSignatures extends React.Component {
@@ -21,7 +19,6 @@ export default class PreferencesSignatures extends React.Component {
   constructor() {
     super()
     this.state = this._getStateFromStores()
-
   }
 
   componentDidMount() {
@@ -58,39 +55,28 @@ export default class PreferencesSignatures extends React.Component {
   }
 
   _onAddSignature = () => {
-    SignatureActions.addSignature()
+    Actions.addSignature()
   }
 
   _onDeleteSignature = (signature) => {
-    SignatureActions.removeSignature(signature)
+    Actions.removeSignature(signature)
   }
 
 
   _onEditSignatureTitle = (editedTitle, oldSig) => {
-    SignatureActions.updateSignatureTitle(editedTitle, oldSig)
+    Actions.updateSignatureTitle(editedTitle, oldSig)
   }
 
   _onEditSignatureBody = (e) => {
-    SignatureActions.updateSignatureBody(e.target.value, this.state.selectedSignature)
+    Actions.updateSignatureBody(e.target.value, this.state.selectedSignature)
   }
 
   _onSelectSignature = (sig) => {
-    SignatureActions.selectSignature(sig.id)
+    Actions.selectSignature(sig.id)
   }
 
   _onToggleAccount = (accountId) => {
-    SignatureActions.toggleAccount(accountId)
-  }
-
-  _signaturesToArray() {
-    const signatures = this.state.signatures
-    const array = []
-    if (signatures) {
-      for (const key of Object.keys(signatures)) {
-        array.push(signatures[key])
-      }
-    }
-    return array
+    Actions.toggleAccount(accountId)
   }
 
   _renderListItemContent(sig) {
@@ -148,7 +134,7 @@ export default class PreferencesSignatures extends React.Component {
   }
 
   _renderSignatures() {
-    const sigArr = this._signaturesToArray()
+    const sigArr = SignatureStore.signaturesToArray()
     if (sigArr.length === 0) {
       return (
         <div className="empty-list">
@@ -186,7 +172,7 @@ export default class PreferencesSignatures extends React.Component {
   }
 
   _renderSignatureTree() {
-    const sigJSON = this._signaturesToArray().map(sig =>
+    const sigJSON = SignatureStore.signaturesToArray().map(sig =>
       <div key={sig.id}>
         <pre>
           {JSON.stringify(sig, null, 2)}

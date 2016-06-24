@@ -1,6 +1,5 @@
-import {ComposerExtension} from 'nylas-exports';
+import {ComposerExtension, SignatureStore} from 'nylas-exports';
 import SignatureUtils from './signature-utils';
-import SignatureStore from './signature-store';
 
 export default class SignatureComposerExtension extends ComposerExtension {
   static prepareNewDraft = ({draft}) => {

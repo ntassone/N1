@@ -1,5 +1,4 @@
-import {AccountStore, Utils} from 'nylas-exports';
-import SignatureActions from './signature-actions';
+import {AccountStore, Utils, Actions} from 'nylas-exports';
 import NylasStore from 'nylas-store'
 import _ from 'underscore'
 
@@ -9,12 +8,12 @@ class SignatureStore extends NylasStore {
 
   activate() {
     this.unsubscribers = [
-      SignatureActions.addSignature.listen(this._onAddSignature),
-      SignatureActions.removeSignature.listen(this._onRemoveSignature),
-      SignatureActions.updateSignatureTitle.listen(this._onEditSignatureTitle),
-      SignatureActions.updateSignatureBody.listen(this._onEditSignatureBody),
-      SignatureActions.selectSignature.listen(this._onSelectSignature),
-      SignatureActions.toggleAccount.listen(this._onToggleAccount),
+      Actions.addSignature.listen(this._onAddSignature),
+      Actions.removeSignature.listen(this._onRemoveSignature),
+      Actions.updateSignatureTitle.listen(this._onEditSignatureTitle),
+      Actions.updateSignatureBody.listen(this._onEditSignatureBody),
+      Actions.selectSignature.listen(this._onSelectSignature),
+      Actions.toggleAccount.listen(this._onToggleAccount),
     ];
 
     this.signatures = NylasEnv.config.get(`nylas.signatures`) || {}
@@ -31,7 +30,9 @@ class SignatureStore extends NylasStore {
 
   selectedSignature = () => {
     const sigs = this.getSignatures()
-    if (!this.selectedSignatureId) {
+    if (!Object.keys(sigs).length) {
+      return null
+    } else if (!this.selectedSignatureId) {
       const firstSig = Object.keys(sigs)
       this.selectedSignatureId = sigs[firstSig].id
     }
@@ -46,6 +47,16 @@ class SignatureStore extends NylasStore {
       }
     }
     return null
+  }
+
+  signaturesToArray() {
+    const array = []
+    if (this.signatures) {
+      for (const key of Object.keys(this.signatures)) {
+        array.push(this.signatures[key])
+      }
+    }
+    return array
   }
 
   _save() {

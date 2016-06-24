@@ -1,7 +1,7 @@
 import React from 'react';
 import classnames from 'classnames';
 
-import {AccountStore} from 'nylas-exports';
+import {AccountStore, SignatureStore} from 'nylas-exports';
 import {Menu, ButtonDropdown} from 'nylas-component-kit';
 
 export default class AccountContactField extends React.Component {
@@ -72,11 +72,43 @@ export default class AccountContactField extends React.Component {
     );
   }
 
+  _renderSigItem = (sigItem) => {
+    return (
+      <span>{sigItem.title}</span>
+    )
+  }
+
+  _renderSignatures() {
+    const sigItems = SignatureStore.signaturesToArray()
+    return (
+      <Menu
+        items={sigItems}
+        itemKey={sigItem => sigItem.id}
+        itemContent={this._renderSigItem}
+      />
+    )
+  }
+  _renderSignatureSelector() {
+    const sigs = SignatureStore.getSignatures();
+
+    // ** what to of if there are no signatures?
+    if (sigs !== {}) {
+      return (
+        <ButtonDropdown
+          primaryItem={<span>{"click"}</span>}
+          menu={this._renderSignatures()}
+        />
+      )
+    }
+    return null
+  }
+
   render() {
     return (
       <div className="composer-participant-field">
         <div className="composer-field-label">From:</div>
         {this._renderAccountSelector()}
+        {this._renderSignatureSelector()}
       </div>
     );
   }
