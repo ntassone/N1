@@ -21,6 +21,7 @@ export default class PreferencesSignatures extends React.Component {
   constructor() {
     super()
     this.state = this._getStateFromStores()
+
   }
 
   componentDidMount() {
@@ -69,8 +70,8 @@ export default class PreferencesSignatures extends React.Component {
     SignatureActions.updateSignatureTitle(editedTitle, oldSig)
   }
 
-  _onEditSignatureBody = (editedSig) => {
-    SignatureActions.updateSignatureBody(editedSig.target.value, this.state.selectedSignature)
+  _onEditSignatureBody = (e) => {
+    SignatureActions.updateSignatureBody(e.target.value, this.state.selectedSignature)
   }
 
   _onSelectSignature = (sig) => {
@@ -93,9 +94,7 @@ export default class PreferencesSignatures extends React.Component {
   }
 
   _renderListItemContent(sig) {
-    // return div and add styles
     return sig.title
-    // return (<div className="item-rule-disabled">{sig.title}</div>);
   }
 
   _renderSignatureToolbar() {
@@ -121,7 +120,7 @@ export default class PreferencesSignatures extends React.Component {
       <MultiselectDropdown
         className="account-dropdown"
         items={this.state.accounts}
-        itemSelection={this.state.signatures[this.state.selectedSignature.id].defaultFor}
+        itemSelection={this.state.selectedSignature.defaultFor}
         onToggleItem={this._onToggleAccount}
       />
     )

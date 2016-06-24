@@ -1,7 +1,7 @@
-import {DraftStore, AccountStore, Actions, Utils} from 'nylas-exports';
-import SignatureUtils from './signature-utils';
+import {AccountStore, Utils} from 'nylas-exports';
 import SignatureActions from './signature-actions';
 import NylasStore from 'nylas-store'
+import _ from 'underscore'
 
 const DefaultSignature = "Sent from <a href=\"https://nylas.com/n1?ref=n1\">Nylas N1</a>, the extensible, open source mail client.";
 
@@ -17,13 +17,11 @@ class SignatureStore extends NylasStore {
       SignatureActions.toggleAccount.listen(this._onToggleAccount),
     ];
 
-    // ** check if already exists before overwritting
-    this.signatures = {} || NylasEnv.config.get(`nylas.signatures`) || {}
+    this.signatures = NylasEnv.config.get(`nylas.signatures`) || {}
     this.selectedSignatureId = null
   }
 
   deactivate() {
-    NylasEnv.config.set(`nylas.signatures`, this.signatures)
     this.unsubscribers.forEach(unsub => unsub());
   }
 
@@ -33,8 +31,27 @@ class SignatureStore extends NylasStore {
 
   selectedSignature = () => {
     const sigs = this.getSignatures()
+    if (!this.selectedSignatureId) {
+      const firstSig = Object.keys(sigs)
+      this.selectedSignatureId = sigs[firstSig].id
+    }
+
     return sigs[this.selectedSignatureId]
   }
+
+  signatureForAccountId = (accountId) => {
+    for (const signatureId of Object.keys(this.signatures)) {
+      if (this.signatures[signatureId].defaultFor[accountId] === true) {
+        return this.signatures[signatureId].body
+      }
+    }
+    return null
+  }
+
+  _save() {
+    _.debounce(NylasEnv.config.set(`nylas.signatures`, this.signatures), 500)
+  }
+
 
   _onSelectSignature = (id) => {
     this.selectedSignatureId = id
@@ -52,8 +69,8 @@ class SignatureStore extends NylasStore {
 
   _onRemoveSignature = (signatureToDelete) => {
     this.signatures = this._removeByKey(this.signatures, signatureToDelete.id)
-
     this.trigger()
+    this._save()
   }
 
   _onAddSignature = (sigTitle = "Untitled") => {
@@ -65,19 +82,20 @@ class SignatureStore extends NylasStore {
       this.signatures[newId].defaultFor[account.id] = false
     }
     this.trigger()
+    this._save()
   }
 
   _onEditSignatureTitle = (editedTitle, oldSig) => {
     this.signatures[oldSig.id].title = editedTitle
-
     this.trigger()
+    this._save()
   }
 
 
   _onEditSignatureBody = (editedBody, oldSig) => {
     this.signatures[oldSig.id].body = editedBody
-
     this.trigger()
+    this._save()
   }
 
   _onToggleAccount = (accountId) => {
@@ -96,8 +114,8 @@ class SignatureStore extends NylasStore {
       // if toggle this account off, just go to selectedSignature
       this.signatures[this.selectedSignatureId].defaultFor[accountId] = false
     }
-
     this.trigger()
+    this._save()
   }
 
 }

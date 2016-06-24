@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import {ButtonDropdown, Menu} from 'nylas-component-kit'
 import ReactDOM from 'react-dom';
 
 /**
@@ -25,6 +26,7 @@ class MultiselectDropdown extends Component {
     items: PropTypes.array.isRequired,
     itemSelection: PropTypes.object,
     onToggleItem: PropTypes.func,
+    selectedItemArr: PropTypes.array,
   }
 
   static defaultProps = {
@@ -48,14 +50,17 @@ class MultiselectDropdown extends Component {
   }
 
 
-  _onItemClick = (e) => {
-    const accountId = e.target.value
+  _onItemClick = (item) => {
+    const accountId = item.id
     this.props.onToggleItem(accountId)
   }
 
   _renderItem = (item) => {
+    const accounts = this.props.itemSelection
+    const MenuItem = Menu.Item
+
     return (
-      <option value={item.id} key={item.accountId} onClick={this._onItemClick}>{item.label}</option>
+      <MenuItem onMouseDown={() => this._onItemClick(item)} checked={accounts[item.id]} key={item.accountId} content={item.label} />
     )
   }
 
@@ -67,34 +72,31 @@ class MultiselectDropdown extends Component {
     this.setState({selectingItems: false})
   }
 
-  _renderCollapsed = (numSelected) => {
+  _renderMenu= (items) => {
     return (
-      <button value="number-selected" key="number-selected" onClick={this._onExpandDropdown}>{numSelected} Accounts</button>
-    )
-  }
-
-  _renderExpanded = (items, selectedItemArr, className) => {
-    const options = items.map(item => this._renderItem(item))
-    return (
-      <select multiple className={`nylas-multiselect-dropdown ${className}`} ref="select" value={selectedItemArr} onBlur={this._onCollapseDropdown} readOnly>
-        {options}
-      </select>
+      <Menu
+        items={items}
+        itemContent={this._renderItem}
+        itemKey={item => item.id}
+        onSelect={() => {}}
+      />
     )
   }
 
   render() {
-    const {className, items, itemSelection} = this.props
+    const {items, itemSelection} = this.props
     const selectedItemArr = []
     for (const accountId of Object.keys(itemSelection)) {
       if (itemSelection[accountId]) selectedItemArr.push(accountId)
     }
-    if (this.state.selectingItems) {
-      return (
-        this._renderExpanded(items, selectedItemArr, className)
-      )
-    }
+    const menu = this._renderMenu(items)
+    const buttonText = selectedItemArr.length + (selectedItemArr.length === 1 ? " Account" : " Accounts")
     return (
-      this._renderCollapsed(selectedItemArr.length)
+      <ButtonDropdown
+        className={'btn-multiselect'}
+        primaryItem={<span>{buttonText}</span>}
+        menu={menu}
+      />
     )
   }
 }

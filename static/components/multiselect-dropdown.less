@@ -1,9 +1,14 @@
-.nylas-multiselect-dropdown {
+@import "ui-variables";
 
-  .account-dropdown {
-    select {
-      option:checked {
-        background-color: pink;
+.nylas-multiselect-dropdown {
+  display: inline-block;
+
+  .button-dropdown, .menu, .secondary-items{
+    .content-container {
+      background: @dropdown-default-bg-color;
+      border-radius: 3px;
+      .item {
+        padding: 5px 10px 5px 20px;
       }
     }
   }
