@@ -18,7 +18,6 @@ export default class ComposerHeaderActions extends React.Component {
   }
 
   render() {
-    console.log(Fields)
     const items = [];
 
     if (this.props.participantsFocused) {

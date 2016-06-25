@@ -33,7 +33,7 @@ class SignatureStore extends NylasStore {
     if (!Object.keys(sigs).length) {
       return null
     } else if (!this.selectedSignatureId) {
-      const firstSig = Object.keys(sigs)
+      const firstSig = Object.keys(sigs)[0]
       this.selectedSignatureId = sigs[firstSig].id
     }
 

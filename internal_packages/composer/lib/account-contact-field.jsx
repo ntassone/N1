@@ -2,7 +2,7 @@ import React from 'react';
 import classnames from 'classnames';
 
 import {AccountStore, SignatureStore} from 'nylas-exports';
-import {Menu, ButtonDropdown} from 'nylas-component-kit';
+import {Menu, ButtonDropdown, RetinaImg} from 'nylas-component-kit';
 
 export default class AccountContactField extends React.Component {
   static displayName = 'AccountContactField';
@@ -79,25 +79,46 @@ export default class AccountContactField extends React.Component {
   }
 
   _renderSignatures() {
+    // var itemsToRender = []
+    // itemsToRender.push
+    const header = [<div className="item"><span>No signature</span></div>]
+    const footer = [<div className="item"><span>Edit Signatures...</span></div>]
+
     const sigItems = SignatureStore.signaturesToArray()
     return (
       <Menu
+        headerComponents={header}
+        footerComponents={footer}
         items={sigItems}
         itemKey={sigItem => sigItem.id}
         itemContent={this._renderSigItem}
       />
     )
   }
+
+  _renderSignatureIcon() {
+    return (
+      <RetinaImg
+        className="signature-button"
+        name="top-signature-dropdown.png"
+        mode={RetinaImg.Mode.ContentIsMask}
+      />
+    )
+  }
   _renderSignatureSelector() {
     const sigs = SignatureStore.getSignatures();
+    const icon = this._renderSignatureIcon()
 
     // ** what to of if there are no signatures?
     if (sigs !== {}) {
       return (
-        <ButtonDropdown
-          primaryItem={<span>{"click"}</span>}
-          menu={this._renderSignatures()}
-        />
+        <div className="signature-button-dropdown">
+          <ButtonDropdown
+            primaryItem={icon}
+            menu={this._renderSignatures()}
+            bordered={false}
+          />
+        </div>
       )
     }
     return null

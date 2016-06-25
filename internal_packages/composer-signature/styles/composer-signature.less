@@ -90,12 +90,64 @@
         display: inline-block;
         color: @text-color-subtle;
 
-        select {
-          margin: 0;
+        .button-dropdown {
+          .secondary-items {
+            .menu {
+              .item {
+                  padding: 5px 10px 5px 25px;
+              }
+              .item.checked {
+                background-image: url(images/menu/osx-checkmark@2x.svg);
+                background-position: left;
+                background-position-x:4%;
+                background-size: 10px;
+              }
+            }
+          }
         }
       }
     }
 
   }
 
+}
+
+.composer-participant-field {
+
+  .signature-button-dropdown {
+    display: inline-block;
+    float: right;
+
+    .only-item {
+      box-shadow: none;
+      padding-right: 0;
+    }
+
+    img.content-mask {
+      display: none;
+    }
+    img.signature-button{
+      display: inline-block;
+      background-color: #919191;
+    }
+
+    .button-dropdown {
+      .secondary-items {
+        right:0;
+        left:auto;
+        .menu {
+          .header-container {
+            display:inline-block;
+          }
+          .footer-container {
+            display: inline-block;
+            border-top: 1px solid #dddddd;
+          }
+
+        }
+      }
+    }
+
+
+  }
 }
