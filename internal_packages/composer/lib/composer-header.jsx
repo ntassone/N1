@@ -274,6 +274,7 @@ export default class ComposerHeader extends React.Component {
           key="from"
           ref={Fields.From}
           draft={this.props.draft}
+          session={this.props.session}
           onChange={this._onChangeParticipants}
           value={from[0]}
         />

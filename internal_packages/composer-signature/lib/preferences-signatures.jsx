@@ -14,7 +14,7 @@ export default class PreferencesSignatures extends React.Component {
   static displayName = 'PreferencesSignatures';
 
     // Signature schema: {id: {id: id, title: title, body: body, defaultFor: {}}}
-    // Default For schema: {id: true, id: false}
+    // DefaultFor schema: {id: true, id: false}
 
   constructor() {
     super()
@@ -40,7 +40,6 @@ export default class PreferencesSignatures extends React.Component {
     const signatures = SignatureStore.getSignatures()
     const accounts = AccountStore.accounts()
     const selected = SignatureStore.selectedSignature()
-
     return {
       signatures: signatures,
       selectedSignature: selected,
@@ -134,7 +133,7 @@ export default class PreferencesSignatures extends React.Component {
   }
 
   _renderSignatures() {
-    const sigArr = SignatureStore.signaturesToArray()
+    const sigArr = SignatureStore.objectToArray(this.state.signatures)
     if (sigArr.length === 0) {
       return (
         <div className="empty-list">
@@ -171,27 +170,12 @@ export default class PreferencesSignatures extends React.Component {
     )
   }
 
-  _renderSignatureTree() {
-    const sigJSON = SignatureStore.signaturesToArray().map(sig =>
-      <div key={sig.id}>
-        <pre>
-          {JSON.stringify(sig, null, 2)}
-        </pre>
-      </div>
-    )
-
-    return (
-      <section>{sigJSON}</section>
-    )
-  }
-
   render() {
     return (
-      <div className="container-signatures">
+      <div className="preferences-signatures-container">
         <section>
           {this._renderSignatures()}
         </section>
-        {this._renderSignatureTree()}
       </div>
     )
   }

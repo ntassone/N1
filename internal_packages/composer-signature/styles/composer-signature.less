@@ -1,6 +1,8 @@
 @import "ui-variables";
 
-.container-signatures {
+
+// Styles for Preferences Signatures
+.preferences-signatures-container {
   max-width: 640px;
   margin: 0 auto;
 
@@ -33,7 +35,7 @@
 
     .items-wrapper {
       min-width:200px;
-      height: 264px;
+      height: 262px;
     }
     .item-rule-disabled {
       color: @color-error;
@@ -50,9 +52,9 @@
     }
 
     .btn-editable-list {
-      height: 35px;
-      width: 35px;
-      line-height: 35px;
+      height: 37px;
+      width: 37px;
+      line-height: 37px;
     }
   }
 
@@ -80,7 +82,7 @@
 
     .editable-toolbar {
       border-top: 1px solid @input-border-color;
-      padding: 6px;
+      padding: 6px 10px;
 
       .render-mode {
         float: right;
@@ -99,7 +101,7 @@
               .item.checked {
                 background-image: url(images/menu/osx-checkmark@2x.svg);
                 background-position: left;
-                background-position-x:4%;
+                background-position-x: 5%;
                 background-size: 10px;
               }
             }
@@ -112,11 +114,15 @@
 
 }
 
+
+// Styles for account-contact-field signature selector
 .composer-participant-field {
 
   .signature-button-dropdown {
     display: inline-block;
+    position: relative;
     float: right;
+    z-index: 2;
 
     .only-item {
       box-shadow: none;
@@ -131,23 +137,38 @@
       background-color: #919191;
     }
 
+
     .button-dropdown {
+      &.open {
+        img.signature-button {
+          background-color: @component-active-color;
+        }
+      }
       .secondary-items {
         right:0;
         left:auto;
         .menu {
           .header-container {
             display:inline-block;
+            padding: 0;
           }
           .footer-container {
             display: inline-block;
             border-top: 1px solid #dddddd;
           }
+          .item {
+              padding: 5px 20px 5px 20px;
+          }
+          .item.checked {
+            background-image: url(images/menu/osx-checkmark@2x.svg);
+            background-position: left;
+            background-position-x: 5%;
+            background-size: 10px;
+          }
 
         }
       }
     }
-
 
   }
 }

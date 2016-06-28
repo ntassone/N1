@@ -16,8 +16,13 @@ class SignatureStore extends NylasStore {
       Actions.toggleAccount.listen(this._onToggleAccount),
     ];
 
+    NylasEnv.config.onDidChange(`nylas.signatures`, () => {
+      this.signatures = NylasEnv.config.get(`nylas.signatures`)
+      this.trigger()
+    })
     this.signatures = NylasEnv.config.get(`nylas.signatures`) || {}
-    this.selectedSignatureId = null
+    this.selectedSignatureId = this._setSelectedSignatureId()
+    this.trigger()
   }
 
   deactivate() {
@@ -28,32 +33,24 @@ class SignatureStore extends NylasStore {
     return this.signatures;
   }
 
-  selectedSignature = () => {
-    const sigs = this.getSignatures()
-    if (!Object.keys(sigs).length) {
-      return null
-    } else if (!this.selectedSignatureId) {
-      const firstSig = Object.keys(sigs)[0]
-      this.selectedSignatureId = sigs[firstSig].id
-    }
-
-    return sigs[this.selectedSignatureId]
+  selectedSignature() {
+    return this.signatures[this.selectedSignatureId]
   }
 
   signatureForAccountId = (accountId) => {
     for (const signatureId of Object.keys(this.signatures)) {
       if (this.signatures[signatureId].defaultFor[accountId] === true) {
-        return this.signatures[signatureId].body
+        return this.signatures[signatureId]
       }
     }
     return null
   }
 
-  signaturesToArray() {
+  objectToArray = (obj) => {
     const array = []
-    if (this.signatures) {
-      for (const key of Object.keys(this.signatures)) {
-        array.push(this.signatures[key])
+    if (obj) {
+      for (const key of Object.keys(obj)) {
+        array.push(obj[key])
       }
     }
     return array
@@ -62,7 +59,6 @@ class SignatureStore extends NylasStore {
   _save() {
     _.debounce(NylasEnv.config.set(`nylas.signatures`, this.signatures), 500)
   }
-
 
   _onSelectSignature = (id) => {
     this.selectedSignatureId = id
@@ -78,8 +74,17 @@ class SignatureStore extends NylasStore {
       }, {})
   }
 
+  _setSelectedSignatureId() {
+    const sigIds = Object.keys(this.signatures)
+    if (sigIds.length) {
+      return sigIds[0]
+    }
+    return null
+  }
+
   _onRemoveSignature = (signatureToDelete) => {
     this.signatures = this._removeByKey(this.signatures, signatureToDelete.id)
+    this.selectedSignatureId = this._setSelectedSignatureId()
     this.trigger()
     this._save()
   }

@@ -1,7 +1,7 @@
 import React from 'react';
 import classnames from 'classnames';
-
-import {AccountStore, SignatureStore} from 'nylas-exports';
+import SignatureUtils from '../../composer-signature/lib/signature-utils'
+import {AccountStore, SignatureStore, Actions} from 'nylas-exports';
 import {Menu, ButtonDropdown, RetinaImg} from 'nylas-component-kit';
 
 export default class AccountContactField extends React.Component {
@@ -10,10 +10,44 @@ export default class AccountContactField extends React.Component {
   static propTypes = {
     value: React.PropTypes.object,
     accounts: React.PropTypes.array.isRequired,
+    session: React.PropTypes.object.isRequired,
+    draft: React.PropTypes.object.isRequired,
     onChange: React.PropTypes.func.isRequired,
   };
 
+  constructor() {
+    super()
+    this.state = this._getStateFromStores()
+  }
+
+  componentDidMount() {
+    this.unsubscribers = [
+      SignatureStore.listen(this._onChange),
+    ]
+  }
+
+  componentWillUnmount() {
+    this.unsubscribers.forEach(unsubscribe => unsubscribe())
+  }
+
+  _onChange = () => {
+    this.setState(this._getStateFromStores())
+  }
+
+  _getStateFromStores() {
+    const signatures = SignatureStore.getSignatures()
+    const signatureForAccountId = SignatureStore.signatureForAccountId
+    const objectToArray = SignatureStore.objectToArray
+    return {
+      signatures: signatures,
+      composerSelectedSignatureId: null,
+      signatureForAccountId: signatureForAccountId,
+      objectToArray: objectToArray,
+    }
+  }
+
   _onChooseContact = (contact) => {
+    this._changeSignature(this.state.signatureForAccountId(contact.accountId))
     this.props.onChange({from: [contact]});
     this.refs.dropdown.toggleDropdown();
   }
@@ -78,13 +112,36 @@ export default class AccountContactField extends React.Component {
     )
   }
 
-  _renderSignatures() {
-    // var itemsToRender = []
-    // itemsToRender.push
-    const header = [<div className="item"><span>No signature</span></div>]
-    const footer = [<div className="item"><span>Edit Signatures...</span></div>]
+  _changeSignature = (sig) => {
+    if (sig) {
+      this.setState({selectedSignatureId: sig.id})
+      const body = SignatureUtils.applySignature(this.props.draft.body, sig.body)
+      this.props.session.changes.add({body})
+    }
+  }
 
-    const sigItems = SignatureStore.signaturesToArray()
+  _isSelected = (sigObj) => {
+    if (!this.state.selectedSignatureId) {
+      return sigObj.defaultFor[this.props.value.accountId]
+    }
+    return this.state.selectedSignatureId === sigObj.id
+  }
+
+  _onClickNoSignature = () => {
+    this._changeSignature({body: ''})
+    this.setState({selectedSignatureId: 'noSignature'})
+  }
+
+  _onClickEditSignatures() {
+    Actions.switchPreferencesTab('Signatures')
+    Actions.openPreferences()
+  }
+
+  _renderSignatures() {
+    const header = [<div className="item" onMouseDown={this._onClickNoSignature}><span>No signature</span></div>]
+    const footer = [<div className="item" onMouseDown={this._onClickEditSignatures}><span>Edit Signatures...</span></div>]
+
+    const sigItems = this.state.objectToArray(this.state.signatures)
     return (
       <Menu
         headerComponents={header}
@@ -92,6 +149,8 @@ export default class AccountContactField extends React.Component {
         items={sigItems}
         itemKey={sigItem => sigItem.id}
         itemContent={this._renderSigItem}
+        onSelect={this._changeSignature}
+        itemChecked={this._isSelected}
       />
     )
   }
@@ -106,7 +165,7 @@ export default class AccountContactField extends React.Component {
     )
   }
   _renderSignatureSelector() {
-    const sigs = SignatureStore.getSignatures();
+    const sigs = this.state.signatures;
     const icon = this._renderSignatureIcon()
 
     // ** what to of if there are no signatures?

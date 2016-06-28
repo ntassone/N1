@@ -4,11 +4,11 @@ import SignatureUtils from './signature-utils';
 export default class SignatureComposerExtension extends ComposerExtension {
   static prepareNewDraft = ({draft}) => {
     const accountId = draft.accountId;
-    const signature = SignatureStore.signatureForAccountId(accountId);
-    if (!signature) {
+    const signatureObj = SignatureStore.signatureForAccountId(accountId);
+    if (!signatureObj) {
       return;
     }
-    draft.body = SignatureUtils.applySignature(draft.body, signature);
+    draft.body = SignatureUtils.applySignature(draft.body, signatureObj.body);
   }
 
   static applyTransformsToDraft = ({draft}) => {
