@@ -7,7 +7,6 @@ export default {
 
     let newBody = body;
     let paddingBefore = '';
-    let paddingAfter = '';
 
     // Remove any existing signature in the body
     newBody = newBody.replace(signatureRegex, "");
@@ -19,12 +18,10 @@ export default {
     if (insertionPoint === -1) {
       insertionPoint = newBody.length;
       if (newDraft) paddingBefore = '<br/><br/>';
-    } else {
-      paddingAfter = '<br/>';
     }
 
     const contentBefore = newBody.slice(0, insertionPoint);
     const contentAfter = newBody.slice(insertionPoint);
-    return `${contentBefore}${paddingBefore}<signature>${signature}${paddingAfter}</signature>${contentAfter}`;
+    return `${contentBefore}${paddingBefore}<signature>${signature}</signature>${contentAfter}`;
   },
 };

@@ -80,7 +80,7 @@ export default class SignatureComposerDropdown extends React.Component {
     const escapeRegExp = (str) => {
       return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
     }
-    const signatureRegex = new RegExp(escapeRegExp(` `))
+    const signatureRegex = new RegExp(escapeRegExp(`<signature>${sigObj.body}</signature>`))
     const signatureLocation = signatureRegex.exec(this.props.draft.body)
     if (signatureLocation) return true
     return false
@@ -127,13 +127,11 @@ export default class SignatureComposerDropdown extends React.Component {
     const sigs = this.state.signatures;
     const icon = this._renderSignatureIcon()
 
-    const location = this.props.draft.from.length > 1 ? "from-multiple" : "from-one"
     // ** what to of if there are no signatures?
     if (sigs !== {}) {
       return (
         <div className="signature-button-dropdown">
           <ButtonDropdown
-            className={location}
             primaryItem={icon}
             menu={this._renderSignatures()}
             bordered={false}
