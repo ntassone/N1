@@ -1,7 +1,7 @@
 import {RegExpUtils} from 'nylas-exports'
 
 export default {
-  applySignature(body, signature) {
+  applySignature(body, signature, newDraft) {
     // https://regex101.com/r/nC0qL2/2
     const signatureRegex = RegExpUtils.signatureRegex();
 
@@ -18,7 +18,7 @@ export default {
     let insertionPoint = newBody.search(RegExpUtils.n1QuoteStartRegex());
     if (insertionPoint === -1) {
       insertionPoint = newBody.length;
-      paddingBefore = '<br/><br/>';
+      if (newDraft) paddingBefore = '<br/><br/>';
     } else {
       paddingAfter = '<br/>';
     }

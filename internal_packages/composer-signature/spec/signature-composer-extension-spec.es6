@@ -1,6 +1,5 @@
-import {Message} from 'nylas-exports';
+import {Message, SignatureStore} from 'nylas-exports';
 import SignatureComposerExtension from '../lib/signature-composer-extension';
-import SignatureStore from '../lib/signature-store';
 
 const TEST_SIGNATURE = '<div class="something">This is my signature.</div>';
 

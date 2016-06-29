@@ -60,6 +60,7 @@ class SignatureStore extends NylasStore {
     _.debounce(NylasEnv.config.set(`nylas.signatures`, this.signatures), 500)
   }
 
+
   _onSelectSignature = (id) => {
     this.selectedSignatureId = id
     this.trigger()

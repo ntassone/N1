@@ -1,8 +1,9 @@
 import React from 'react';
 import classnames from 'classnames';
-import SignatureUtils from '../../composer-signature/lib/signature-utils'
-import {AccountStore, SignatureStore, Actions} from 'nylas-exports';
-import {Menu, ButtonDropdown, RetinaImg} from 'nylas-component-kit';
+import {
+  AccountStore,
+} from 'nylas-exports';
+import {Menu, ButtonDropdown, InjectedComponentSet} from 'nylas-component-kit';
 
 export default class AccountContactField extends React.Component {
   static displayName = 'AccountContactField';
@@ -15,40 +16,9 @@ export default class AccountContactField extends React.Component {
     onChange: React.PropTypes.func.isRequired,
   };
 
-  constructor() {
-    super()
-    this.state = this._getStateFromStores()
-  }
-
-  componentDidMount() {
-    this.unsubscribers = [
-      SignatureStore.listen(this._onChange),
-    ]
-  }
-
-  componentWillUnmount() {
-    this.unsubscribers.forEach(unsubscribe => unsubscribe())
-  }
-
-  _onChange = () => {
-    this.setState(this._getStateFromStores())
-  }
-
-  _getStateFromStores() {
-    const signatures = SignatureStore.getSignatures()
-    const signatureForAccountId = SignatureStore.signatureForAccountId
-    const objectToArray = SignatureStore.objectToArray
-    return {
-      signatures: signatures,
-      composerSelectedSignatureId: null,
-      signatureForAccountId: signatureForAccountId,
-      objectToArray: objectToArray,
-    }
-  }
-
   _onChooseContact = (contact) => {
-    this._changeSignature(this.state.signatureForAccountId(contact.accountId))
     this.props.onChange({from: [contact]});
+    this.props.session.ensureCorrectAccount()
     this.refs.dropdown.toggleDropdown();
   }
 
@@ -106,81 +76,21 @@ export default class AccountContactField extends React.Component {
     );
   }
 
-  _renderSigItem = (sigItem) => {
+
+  _renderFromFieldComponents = () => {
+    const {draft, session, accounts} = this.props
     return (
-      <span>{sigItem.title}</span>
-    )
-  }
-
-  _changeSignature = (sig) => {
-    if (sig) {
-      this.setState({selectedSignatureId: sig.id})
-      const body = SignatureUtils.applySignature(this.props.draft.body, sig.body)
-      this.props.session.changes.add({body})
-    }
-  }
-
-  _isSelected = (sigObj) => {
-    if (!this.state.selectedSignatureId) {
-      return sigObj.defaultFor[this.props.value.accountId]
-    }
-    return this.state.selectedSignatureId === sigObj.id
-  }
-
-  _onClickNoSignature = () => {
-    this._changeSignature({body: ''})
-    this.setState({selectedSignatureId: 'noSignature'})
-  }
-
-  _onClickEditSignatures() {
-    Actions.switchPreferencesTab('Signatures')
-    Actions.openPreferences()
-  }
-
-  _renderSignatures() {
-    const header = [<div className="item" onMouseDown={this._onClickNoSignature}><span>No signature</span></div>]
-    const footer = [<div className="item" onMouseDown={this._onClickEditSignatures}><span>Edit Signatures...</span></div>]
-
-    const sigItems = this.state.objectToArray(this.state.signatures)
-    return (
-      <Menu
-        headerComponents={header}
-        footerComponents={footer}
-        items={sigItems}
-        itemKey={sigItem => sigItem.id}
-        itemContent={this._renderSigItem}
-        onSelect={this._changeSignature}
-        itemChecked={this._isSelected}
+      <InjectedComponentSet
+        className="dropdown-component"
+        matching={{role: "Composer:FromFieldComponents"}}
+        exposedProps={{
+          draft,
+          session,
+          accounts,
+          value: draft.from[0],
+        }}
       />
     )
-  }
-
-  _renderSignatureIcon() {
-    return (
-      <RetinaImg
-        className="signature-button"
-        name="top-signature-dropdown.png"
-        mode={RetinaImg.Mode.ContentIsMask}
-      />
-    )
-  }
-  _renderSignatureSelector() {
-    const sigs = this.state.signatures;
-    const icon = this._renderSignatureIcon()
-
-    // ** what to of if there are no signatures?
-    if (sigs !== {}) {
-      return (
-        <div className="signature-button-dropdown">
-          <ButtonDropdown
-            primaryItem={icon}
-            menu={this._renderSignatures()}
-            bordered={false}
-          />
-        </div>
-      )
-    }
-    return null
   }
 
   render() {
@@ -188,7 +98,7 @@ export default class AccountContactField extends React.Component {
       <div className="composer-participant-field">
         <div className="composer-field-label">From:</div>
         {this._renderAccountSelector()}
-        {this._renderSignatureSelector()}
+        {this._renderFromFieldComponents()}
       </div>
     );
   }

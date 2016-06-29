@@ -8,7 +8,7 @@ export default class SignatureComposerExtension extends ComposerExtension {
     if (!signatureObj) {
       return;
     }
-    draft.body = SignatureUtils.applySignature(draft.body, signatureObj.body);
+    draft.body = SignatureUtils.applySignature(draft.body, signatureObj.body, draft.pristine);
   }
 
   static applyTransformsToDraft = ({draft}) => {

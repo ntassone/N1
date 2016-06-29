@@ -118,57 +118,59 @@
 // Styles for account-contact-field signature selector
 .composer-participant-field {
 
-  .signature-button-dropdown {
+  .dropdown-component {
     display: inline-block;
-    position: relative;
     float: right;
-    z-index: 2;
 
-    .only-item {
-      box-shadow: none;
-      padding-right: 0;
-    }
+    .signature-button-dropdown {
 
-    img.content-mask {
-      display: none;
-    }
-    img.signature-button{
-      display: inline-block;
-      background-color: #919191;
-    }
-
-
-    .button-dropdown {
-      &.open {
-        img.signature-button {
-          background-color: @component-active-color;
-        }
+      .only-item {
+        box-shadow: none;
+        padding-right: 0;
       }
-      .secondary-items {
-        right:0;
-        left:auto;
-        .menu {
-          .header-container {
-            display:inline-block;
-            padding: 0;
+
+      img.content-mask {
+        display: none;
+      }
+      img.signature-button{
+        display: inline-block;
+        background-color: #919191;
+      }      
+
+      .button-dropdown {
+
+        &.open {
+          img.signature-button {
+            background-color: @component-active-color;
           }
-          .footer-container {
-            display: inline-block;
-            border-top: 1px solid #dddddd;
-          }
-          .item {
+        }
+        .secondary-items {
+          right:0;
+          left:auto;
+          .menu {
+            .header-container {
+              display:inline-block;
+              padding: 0;
+            }
+            .footer-container {
+              display: inline-block;
+              border-top: 1px solid #dddddd;
+            }
+            .item {
               padding: 5px 20px 5px 20px;
-          }
-          .item.checked {
-            background-image: url(images/menu/osx-checkmark@2x.svg);
-            background-position: left;
-            background-position-x: 5%;
-            background-size: 10px;
-          }
+            }
+            .item.checked {
+              background-image: url(images/menu/osx-checkmark@2x.svg);
+              background-position: left;
+              background-position-x: 5%;
+              background-size: 10px;
+            }
 
+          }
         }
       }
-    }
 
+    }
   }
+
 }
