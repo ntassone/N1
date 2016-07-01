@@ -143,7 +143,7 @@ export default class PreferencesSignatures extends React.Component {
             mode={RetinaImg.Mode.ContentDark}
           />
           <h2>No signatures</h2>
-          <button className="btn btn-small" onMouseDown={this._onCreateButtonClick}>
+          <button className="btn btn-small btn-create-signature" onMouseDown={this._onCreateButtonClick}>
               Create a new signature
           </button>
         </div>

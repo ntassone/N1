@@ -40,7 +40,8 @@ class SignatureStore extends NylasStore {
   signatureForAccountId = (accountId) => {
     for (const signatureId of Object.keys(this.signatures)) {
       if (this.signatures[signatureId].defaultFor[accountId] === true) {
-        return this.signatures[signatureId]
+        const sig = this.signatures[signatureId]
+        return sig.body !== "" ? sig : null
       }
     }
     return null

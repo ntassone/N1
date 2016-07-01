@@ -10,6 +10,7 @@ import {
   ButtonDropdown,
 } from 'nylas-component-kit'
 import SignatureUtils from './signature-utils'
+import _ from 'underscore'
 
 
 export default class SignatureComposerDropdown extends React.Component {
@@ -29,7 +30,7 @@ export default class SignatureComposerDropdown extends React.Component {
     this.state = this._getStateFromStores()
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
     this.unsubscribers = [
       SignatureStore.listen(this._onChange),
     ]
@@ -125,10 +126,11 @@ export default class SignatureComposerDropdown extends React.Component {
 
   render() {
     const sigs = this.state.signatures;
+    console.log("sigs: ", sigs)
     const icon = this._renderSignatureIcon()
 
     // ** what to of if there are no signatures?
-    if (sigs !== {}) {
+    if (!_.isEmpty(sigs)) {
       return (
         <div className="signature-button-dropdown">
           <ButtonDropdown
