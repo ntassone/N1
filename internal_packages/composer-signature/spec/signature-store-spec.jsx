@@ -16,7 +16,7 @@ let SIGNATURES = {
   },
 }
 
-describe('SignatureStore', function signatureStore() {
+fdescribe('SignatureStore', function signatureStore() {
   beforeEach(() => {
     spyOn(NylasEnv.config, 'get').andCallFake(() => SIGNATURES)
 
@@ -68,8 +68,11 @@ describe('SignatureStore', function signatureStore() {
       const toRemove = SIGNATURES[SignatureStore.selectedSignatureId]
       SignatureStore._onRemoveSignature(toRemove)
       expect(SIGNATURES['1']).toEqual(undefined)
+    })
+    it('should reset selectedSignatureId to a different signature', () => {
+      const toRemove = SIGNATURES[SignatureStore.selectedSignatureId]
+      SignatureStore._onRemoveSignature(toRemove)
       expect(SignatureStore.selectedSignatureId).toNotEqual('1')
     })
-    it('should reset selectedSignatureId to a different signature')
   })
 })

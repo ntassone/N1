@@ -17,16 +17,13 @@ Item can be string or object
 class MultiselectDropdown extends Component {
   static displayName = 'MultiselectDropdown'
 
-// how should I think about building/testing this?
-// where do my styles go?
-// want a styled drop down that lets you select multiple options and packages them
-
   static propTypes = {
     className: PropTypes.string,
     items: PropTypes.array.isRequired,
     itemSelection: PropTypes.object,
     onToggleItem: PropTypes.func,
     selectedItemArr: PropTypes.array,
+    itemKeyFunc: PropTypes.func,
   }
 
   static defaultProps = {
@@ -34,13 +31,6 @@ class MultiselectDropdown extends Component {
     items: [],
     itemSelection: {},
     onToggleItem: () => {},
-  }
-
-  constructor() {
-    super()
-    this.state = {
-      selectingItems: false,
-    }
   }
 
   componentDidUpdate() {
@@ -64,32 +54,25 @@ class MultiselectDropdown extends Component {
     )
   }
 
-  _onExpandDropdown = () => {
-    this.setState({selectingItems: true})
-  }
 
-  _onCollapseDropdown = () => {
-    this.setState({selectingItems: false})
-  }
-
-  _renderMenu= (items) => {
+  _renderMenu= (items, itemKeyFunc) => {
     return (
       <Menu
         items={items}
         itemContent={this._renderItem}
-        itemKey={item => item.id}
+        itemKey={itemKeyFunc}
         onSelect={() => {}}
       />
     )
   }
 
   render() {
-    const {items, itemSelection} = this.props
+    const {items, itemSelection, itemKeyFunc} = this.props
     const selectedItemArr = []
     for (const accountId of Object.keys(itemSelection)) {
       if (itemSelection[accountId]) selectedItemArr.push(accountId)
     }
-    const menu = this._renderMenu(items)
+    const menu = this._renderMenu(items, itemKeyFunc)
     const buttonText = selectedItemArr.length + (selectedItemArr.length === 1 ? " Account" : " Accounts")
     return (
       <ButtonDropdown

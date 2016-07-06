@@ -66,7 +66,7 @@ export default class SignatureComposerDropdown extends React.Component {
 
   _renderSigItem = (sigItem) => {
     return (
-      <span>{sigItem.title}</span>
+      <span className={`signature-title-${sigItem.title}`}>{sigItem.title}</span>
     )
   }
   _changeSignature = (sig) => {
@@ -97,8 +97,8 @@ export default class SignatureComposerDropdown extends React.Component {
   }
 
   _renderSignatures() {
-    const header = [<div className="item" onMouseDown={this._onClickNoSignature}><span>No signature</span></div>]
-    const footer = [<div className="item" onMouseDown={this._onClickEditSignatures}><span>Edit Signatures...</span></div>]
+    const header = [<div className="item item-none" key="none" onMouseDown={this._onClickNoSignature}><span>No signature</span></div>]
+    const footer = [<div className="item item-edit" key="edit" onMouseDown={this._onClickEditSignatures}><span>Edit Signatures...</span></div>]
 
     const sigItems = this.state.objectToArray(this.state.signatures)
     return (
@@ -126,10 +126,8 @@ export default class SignatureComposerDropdown extends React.Component {
 
   render() {
     const sigs = this.state.signatures;
-    console.log("sigs: ", sigs)
     const icon = this._renderSignatureIcon()
 
-    // ** what to of if there are no signatures?
     if (!_.isEmpty(sigs)) {
       return (
         <div className="signature-button-dropdown">

@@ -107,6 +107,7 @@ export default class PreferencesSignatures extends React.Component {
         items={this.state.accounts}
         itemSelection={this.state.selectedSignature.defaultFor}
         onToggleItem={this._onToggleAccount}
+        itemKeyFunc={item => item.id}
       />
     )
   }

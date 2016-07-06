@@ -86,39 +86,5 @@ describe('SignatureComposerExtension', function signatureComposerExtension() {
         });
       });
     });
-
-    describe("when no signature is present in the config file", () => {
-      beforeEach(() => {
-        spyOn(NylasEnv.config, 'get').andCallFake(() => undefined);
-      });
-
-      // ** do we want it to auto put the default signature?
-      // it("should insert the default signature", () => {
-      //   const a = new Message({
-      //     draft: true,
-      //     accountId: TEST_ACCOUNT_ID,
-      //     body: 'This is a test! <div class="gmail_quote">Hello world</div>',
-      //   });
-      //   SignatureComposerExtension.prepareNewDraft({draft: a});
-      //   expect(a.body).toEqual(`This is a test! <signature>${SignatureStore.DefaultSignature}<br/></signature><div class="gmail_quote">Hello world</div>`);
-      // });
-    });
-
-    //
-    // describe("when a blank signature is present in the config file", () => {
-    //   beforeEach(() => {
-    //     spyOn(NylasEnv.config, 'get').andCallFake(() => "");
-    //   });
-    //
-    //   it("should insert nothing", () => {
-    //     const a = new Message({
-    //       draft: true,
-    //       accountId: TEST_ACCOUNT_ID,
-    //       body: 'This is a test! <div class="gmail_quote">Hello world</div>',
-    //     });
-    //     SignatureComposerExtension.prepareNewDraft({draft: a});
-    //     expect(a.body).toEqual(`This is a test! <div class="gmail_quote">Hello world</div>`);
-    //   });
-    // });
   });
 });
