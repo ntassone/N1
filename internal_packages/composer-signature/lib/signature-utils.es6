@@ -17,7 +17,7 @@ export default {
     let insertionPoint = newBody.search(RegExpUtils.n1QuoteStartRegex());
     if (insertionPoint === -1) {
       insertionPoint = newBody.length;
-      if (newDraft) paddingBefore = '<br/><br/>';
+      if (newDraft || newBody === '<head></head><body></body>') paddingBefore = '<br/><br/>';
     }
 
     const contentBefore = newBody.slice(0, insertionPoint);
