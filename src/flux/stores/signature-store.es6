@@ -1,4 +1,4 @@
-import {AccountStore, Utils, Actions} from 'nylas-exports';
+import {Utils, Actions} from 'nylas-exports';
 import NylasStore from 'nylas-store'
 import _ from 'underscore'
 
@@ -19,8 +19,13 @@ class SignatureStore extends NylasStore {
       this.signatures = NylasEnv.config.get(`nylas.signatures`)
       this.trigger()
     })
+    NylasEnv.config.onDidChange(`nylas.defaultSignatures`, () => {
+      this.defaultSignatures = NylasEnv.config.get(`nylas.defaultSignatures`)
+      this.trigger()
+    })
     this.signatures = NylasEnv.config.get(`nylas.signatures`) || {}
     this.selectedSignatureId = this._setSelectedSignatureId()
+    this.defaultSignatures = NylasEnv.config.get(`nylas.defaultSignatures`) || {}
     this.trigger()
   }
 
@@ -36,18 +41,20 @@ class SignatureStore extends NylasStore {
     return this.signatures[this.selectedSignatureId]
   }
 
-  signatureForAccountId = (accountId) => {
-    for (const signatureId of Object.keys(this.signatures)) {
-      if (this.signatures[signatureId].defaultFor[accountId] === true) {
-        const sig = this.signatures[signatureId]
-        return sig.body !== "" ? sig : null
-      }
-    }
-    return null
+  getDefaults() {
+    return this.defaultSignatures
   }
 
-  _save() {
+  signatureForAccountId = (accountId) => {
+    return this.signatures[this.defaultSignatures[accountId]]
+  }
+
+  _saveSignatures() {
     _.debounce(NylasEnv.config.set(`nylas.signatures`, this.signatures), 500)
+  }
+
+  _saveDefaultSignatures() {
+    _.debounce(NylasEnv.config.set(`nylas.defaultSignatures`, this.defaultSignatures), 500)
   }
 
 
@@ -77,46 +84,33 @@ class SignatureStore extends NylasStore {
     this.signatures = this._removeByKey(this.signatures, signatureToDelete.id)
     this.selectedSignatureId = this._setSelectedSignatureId()
     this.trigger()
-    this._save()
+    this._saveSignatures()
   }
 
   _onAddSignature = (sigTitle = "Untitled") => {
     const newId = Utils.generateTempId()
-    const allAccounts = AccountStore.accounts()
-    this.signatures[newId] = {id: newId, title: sigTitle, body: DefaultSignature, defaultFor: {}}
+    this.signatures[newId] = {id: newId, title: sigTitle, body: DefaultSignature}
     this.selectedSignatureId = newId
-    for (const account of allAccounts) {
-      this.signatures[newId].defaultFor[account.id] = false
-    }
     this.trigger()
-    this._save()
+    this._saveSignatures()
   }
 
   _onEditSignature = (editedSig, oldSigId) => {
     this.signatures[oldSigId].title = editedSig.title
     this.signatures[oldSigId].body = editedSig.body
     this.trigger()
-    this._save()
+    this._saveSignatures()
   }
 
   _onToggleAccount = (accountId) => {
-    // figure out if toggle on or off - if account already in selectedSignatures list => toggle off, else toggle on
-    const toggle = !this.signatures[this.selectedSignatureId].defaultFor[accountId]
-    // if toggle this account on, go through all other sigs and toggle this account off
-    if (toggle) {
-      for (const signatureId of Object.keys(this.signatures)) {
-        if (signatureId === this.selectedSignatureId) {
-          this.signatures[signatureId].defaultFor[accountId] = true
-        } else {
-          this.signatures[signatureId].defaultFor[accountId] = false
-        }
-      }
+    if (this.defaultSignatures[accountId] === this.selectedSignatureId) {
+      this.defaultSignatures[accountId] = null
     } else {
-      // if toggle this account off, just go to selectedSignature
-      this.signatures[this.selectedSignatureId].defaultFor[accountId] = false
+      this.defaultSignatures[accountId] = this.selectedSignatureId
     }
+
     this.trigger()
-    this._save()
+    this._saveDefaultSignatures()
   }
 
 }

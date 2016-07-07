@@ -6,9 +6,7 @@ const TEST_SIGNATURE = {
   id: TEST_ID,
   title: 'test-sig',
   body: '<div class="something">This is my signature.</div>',
-  defaultFor: {},
 }
-TEST_SIGNATURE.defaultFor[TEST_ACCOUNT_ID] = true
 
 const TEST_SIGNATURES = {}
 TEST_SIGNATURES[TEST_ID] = TEST_SIGNATURE
@@ -18,6 +16,7 @@ describe('SignatureComposerExtension', function signatureComposerExtension() {
     describe("when a signature is defined", () => {
       beforeEach(() => {
         spyOn(NylasEnv.config, 'get').andCallFake(() => TEST_SIGNATURES);
+        spyOn(SignatureStore, 'signatureForAccountId').andReturn(TEST_SIGNATURE)
         SignatureStore.activate()
       });
 

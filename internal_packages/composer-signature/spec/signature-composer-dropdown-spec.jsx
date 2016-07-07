@@ -11,17 +11,15 @@ const SIGNATURES = {
     id: '1',
     title: 'one',
     body: 'first test signature!',
-    defaultFor: {11: false, 22: false},
   },
   '2': {
     id: '2',
     title: 'two',
     body: 'Here is my second sig!',
-    defaultFor: {11: true, 22: false},
   },
 }
 
-fdescribe('SignatureComposerDropdown', function signatureComposerDropdown() {
+describe('SignatureComposerDropdown', function signatureComposerDropdown() {
   beforeEach(() => {
     spyOn(SignatureStore, 'getSignatures').andReturn(SIGNATURES)
     spyOn(SignatureStore, 'selectedSignature')

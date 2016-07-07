@@ -37,9 +37,11 @@ export default class PreferencesSignatures extends React.Component {
     const signatures = SignatureStore.getSignatures()
     const accounts = AccountStore.accounts()
     const selected = SignatureStore.selectedSignature()
+    const defaults = SignatureStore.getDefaults()
     return {
       signatures: signatures,
       selectedSignature: selected,
+      defaults: defaults,
       accounts: accounts,
       editAsHTML: this.state ? this.state.editAsHTML : false,
     }
@@ -60,7 +62,7 @@ export default class PreferencesSignatures extends React.Component {
 
   _onEditSignature = (edit) => {
     let editedSig;
-    if(typeof edit === "object") {
+    if (typeof edit === "object") {
       editedSig = {
         title: this.state.selectedSignature.title,
         body: edit.target.value,
@@ -105,18 +107,34 @@ export default class PreferencesSignatures extends React.Component {
     )
   }
 
-  _selectItemKey = (item) => {
-    return item.accountId
+  _selectItemKey = (account) => {
+    return account.accountId
+  }
+
+  _isChecked = (account) => {
+    if (this.state.defaults[account.accountId] === this.state.selectedSignature.id) return true
+    return false
+  }
+
+  _numSelected() {
+    const sel = _.filter(this.state.accounts, (account) => {
+      return this._isChecked(account)
+    })
+    const numSelected = sel.length
+    return numSelected.toString() + (numSelected === 1 ? " Account" : " Accounts")
   }
 
   _renderAccountPicker() {
+    const buttonText = this._numSelected()
     return (
       <MultiselectDropdown
         className="account-dropdown"
         items={this.state.accounts}
-        itemSelection={this.state.selectedSignature.defaultFor}
+        itemChecked={this._isChecked}
         onToggleItem={this._onToggleAccount}
-        itemKeySelection={this._selectItemKey}
+        itemKey={this._selectItemKey}
+        current={this.selectedSignature}
+        buttonText={buttonText}
       />
     )
   }

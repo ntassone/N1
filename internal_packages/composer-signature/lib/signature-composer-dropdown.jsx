@@ -66,7 +66,7 @@ export default class SignatureComposerDropdown extends React.Component {
   }
   _changeSignature = (sig) => {
     if (sig) {
-      const body = SignatureUtils.applySignature(this.props.draft.body, sig.body, ({newDraft: false}))
+      const body = SignatureUtils.applySignature(this.props.draft.body, sig.body)
       this.props.session.changes.add({body})
     }
   }

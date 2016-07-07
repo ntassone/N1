@@ -21,17 +21,19 @@ class MultiselectDropdown extends Component {
   static propTypes = {
     className: PropTypes.string,
     items: PropTypes.array.isRequired,
-    itemSelection: PropTypes.object,
+    itemChecked: PropTypes.func,
     onToggleItem: PropTypes.func,
-    itemKeySelection: PropTypes.func,
+    itemKey: PropTypes.func,
+    buttonText: PropTypes.string,
   }
 
   static defaultProps = {
     className: '',
     items: [],
-    itemSelection: {},
+    itemChecked: {},
     onToggleItem: () => {},
-    itemKeySelection: () => {},
+    itemKey: () => {},
+    buttonText: '',
   }
 
   componentDidUpdate() {
@@ -46,10 +48,9 @@ class MultiselectDropdown extends Component {
   }
 
   _renderItem = (item) => {
-    const items = this.props.itemSelection
     const MenuItem = Menu.Item
     return (
-      <MenuItem onMouseDown={() => this._onItemClick(item)} checked={items[item.id]} key={this.props.itemKeySelection(item)} content={item.label} />
+      <MenuItem onMouseDown={() => this._onItemClick(item)} checked={this.props.itemChecked(item)} key={this.props.itemKey(item)} content={item.label} />
     )
   }
 
@@ -66,14 +67,12 @@ class MultiselectDropdown extends Component {
   }
 
   render() {
-    const {items, itemSelection} = this.props
-    const numSelected = _.values(_.pick(itemSelection, (val) => { return val === true })).length
+    const {items} = this.props
     const menu = this._renderMenu(items)
-    const buttonText = numSelected.toString() + (numSelected === 1 ? " Account" : " Accounts")
     return (
       <ButtonDropdown
         className={'btn-multiselect'}
-        primaryItem={<span>{buttonText}</span>}
+        primaryItem={<span>{this.props.buttonText}</span>}
         menu={menu}
       />
     )

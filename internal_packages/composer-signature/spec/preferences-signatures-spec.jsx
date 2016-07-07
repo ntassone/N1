@@ -9,27 +9,32 @@ const SIGNATURES = {
     id: '1',
     title: 'one',
     body: 'first test signature!',
-    defaultFor: {11: false, 22: false},
   },
   '2': {
     id: '2',
     title: 'two',
     body: 'Here is my second sig!',
-    defaultFor: {11: true, 22: false},
   },
 }
+
+const DEFAULTS = {
+  11: '1',
+  22: '2',
+}
+
 
 const makeComponent = (props = {}) => {
   return ReactTestUtils.renderIntoDocument(<PreferencesSignatures {...props} />)
 }
 
-fdescribe('PreferencesSignatures', function preferencesSignatures() {
+describe('PreferencesSignatures', function preferencesSignatures() {
   this.component = null
 
   describe('when there are no signatures', () => {
     it('should add a signature when you click the button', () => {
       spyOn(SignatureStore, 'getSignatures').andReturn({})
       spyOn(SignatureStore, 'selectedSignature')
+      spyOn(SignatureStore, 'getDefaults').andReturn({})
       this.component = makeComponent()
       spyOn(Actions, 'addSignature')
       this.button = ReactTestUtils.findRenderedDOMComponentWithClass(this.component, 'btn-create-signature')
@@ -42,6 +47,7 @@ fdescribe('PreferencesSignatures', function preferencesSignatures() {
     beforeEach(() => {
       spyOn(SignatureStore, 'getSignatures').andReturn(SIGNATURES)
       spyOn(SignatureStore, 'selectedSignature').andReturn(SIGNATURES['1'])
+      spyOn(SignatureStore, 'getDefaults').andReturn(DEFAULTS)
       this.component = makeComponent()
     })
     it('should add a signature when you click the plus button', () => {
@@ -69,16 +75,16 @@ fdescribe('PreferencesSignatures', function preferencesSignatures() {
       expect(Actions.selectSignature).toHaveBeenCalledWith('2')
     })
     it('should modify the signature body when edited', () => {
-      spyOn(Actions, 'updateSignatureBody')
+      spyOn(Actions, 'updateSignature')
       const newText = 'Changed <strong>NEW 1 HTML</strong><br>'
-      this.component._onEditSignatureBody({target: {value: newText}});
-      expect(Actions.updateSignatureBody).toHaveBeenCalled()
+      this.component._onEditSignature({target: {value: newText}});
+      expect(Actions.updateSignature).toHaveBeenCalled()
     })
     it('should modify the signature title when edited', () => {
-      spyOn(Actions, 'updateSignatureTitle')
+      spyOn(Actions, 'updateSignature')
       const newTitle = 'Changed'
-      this.component._onEditSignatureTitle(newTitle, SIGNATURES['1'].title)
-      expect(Actions.updateSignatureTitle).toHaveBeenCalled()
+      this.component._onEditSignature(newTitle)
+      expect(Actions.updateSignature).toHaveBeenCalled()
     })
   })
 })
