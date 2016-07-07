@@ -87,7 +87,7 @@ export default class AccountContactField extends React.Component {
           draft,
           session,
           accounts,
-          value: draft.from[0],
+          currentAccount: draft.from[0],
         }}
       />
     )

@@ -21,7 +21,7 @@ export default class SignatureComposerDropdown extends React.Component {
   static propTypes = {
     draft: React.PropTypes.object.isRequired,
     session: React.PropTypes.object.isRequired,
-    value: React.PropTypes.object,
+    currentAccount: React.PropTypes.object,
     accounts: React.PropTypes.array,
   }
 
@@ -37,9 +37,8 @@ export default class SignatureComposerDropdown extends React.Component {
   }
 
   componentDidUpdate(previousProps) {
-    // if checks that the from account differs -- executed when the from email is changed
-    if (previousProps.value.accountId !== this.props.value.accountId) {
-      const newAccountDefaultSignature = this.state.signatureForAccountId(this.props.value.accountId)
+    if (previousProps.currentAccount.accountId !== this.props.currentAccount.accountId) {
+      const newAccountDefaultSignature = SignatureStore.signatureForAccountId(this.props.currentAccount.accountId)
       this._changeSignature(newAccountDefaultSignature)
     }
   }
@@ -55,12 +54,8 @@ export default class SignatureComposerDropdown extends React.Component {
 
   _getStateFromStores() {
     const signatures = SignatureStore.getSignatures()
-    const signatureForAccountId = SignatureStore.signatureForAccountId
-    const objectToArray = SignatureStore.objectToArray
     return {
       signatures: signatures,
-      signatureForAccountId: signatureForAccountId,
-      objectToArray: objectToArray,
     }
   }
 
@@ -71,7 +66,7 @@ export default class SignatureComposerDropdown extends React.Component {
   }
   _changeSignature = (sig) => {
     if (sig) {
-      const body = SignatureUtils.applySignature(this.props.draft.body, sig.body)
+      const body = SignatureUtils.applySignature(this.props.draft.body, sig.body, ({newDraft: false}))
       this.props.session.changes.add({body})
     }
   }
@@ -100,7 +95,7 @@ export default class SignatureComposerDropdown extends React.Component {
     const header = [<div className="item item-none" key="none" onMouseDown={this._onClickNoSignature}><span>No signature</span></div>]
     const footer = [<div className="item item-edit" key="edit" onMouseDown={this._onClickEditSignatures}><span>Edit Signatures...</span></div>]
 
-    const sigItems = this.state.objectToArray(this.state.signatures)
+    const sigItems = _.values(this.state.signatures)
     return (
       <Menu
         headerComponents={header}

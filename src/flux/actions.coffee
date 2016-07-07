@@ -550,8 +550,7 @@ class Actions
   # Actions for the signature preferences and shared with the composer
   @addSignature: ActionScopeWindow
   @removeSignature: ActionScopeWindow
-  @updateSignatureTitle: ActionScopeWindow
-  @updateSignatureBody: ActionScopeWindow
+  @updateSignature: ActionScopeWindow
   @selectSignature: ActionScopeWindow
   @toggleAccount: ActionScopeWindow
 

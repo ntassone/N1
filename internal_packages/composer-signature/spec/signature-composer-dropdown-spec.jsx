@@ -1,18 +1,11 @@
 /* eslint quote-props: 0 */
 
 import React from 'react';
-// curly braces are destructuring syntax
 import SignatureComposerDropdown from '../lib/signature-composer-dropdown'
-// import SignatureComposerExtension from '../lib/signature-composer-extension'
 import {renderIntoDocument} from '../../../spec/nylas-test-utils'
 import ReactTestUtils from 'react-addons-test-utils'
 import {SignatureStore} from 'nylas-exports';
 
-// adds default sig into composer
-  // sig is selected
-  // on edit - sig is not selected
-// when change from field
-  // if from field has different default sig, it changes
 const SIGNATURES = {
   '1': {
     id: '1',
@@ -29,7 +22,6 @@ const SIGNATURES = {
 }
 
 fdescribe('SignatureComposerDropdown', function signatureComposerDropdown() {
-  // const session, draft;
   beforeEach(() => {
     spyOn(SignatureStore, 'getSignatures').andReturn(SIGNATURES)
     spyOn(SignatureStore, 'selectedSignature')

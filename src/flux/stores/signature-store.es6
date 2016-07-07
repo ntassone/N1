@@ -10,8 +10,7 @@ class SignatureStore extends NylasStore {
     this.unsubscribers = [
       Actions.addSignature.listen(this._onAddSignature),
       Actions.removeSignature.listen(this._onRemoveSignature),
-      Actions.updateSignatureTitle.listen(this._onEditSignatureTitle),
-      Actions.updateSignatureBody.listen(this._onEditSignatureBody),
+      Actions.updateSignature.listen(this._onEditSignature),
       Actions.selectSignature.listen(this._onSelectSignature),
       Actions.toggleAccount.listen(this._onToggleAccount),
     ];
@@ -45,16 +44,6 @@ class SignatureStore extends NylasStore {
       }
     }
     return null
-  }
-
-  objectToArray = (obj) => {
-    const array = []
-    if (obj) {
-      for (const key of Object.keys(obj)) {
-        array.push(obj[key])
-      }
-    }
-    return array
   }
 
   _save() {
@@ -103,15 +92,9 @@ class SignatureStore extends NylasStore {
     this._save()
   }
 
-  _onEditSignatureTitle = (editedTitle, oldSig) => {
-    this.signatures[oldSig.id].title = editedTitle
-    this.trigger()
-    this._save()
-  }
-
-
-  _onEditSignatureBody = (editedBody, oldSig) => {
-    this.signatures[oldSig.id].body = editedBody
+  _onEditSignature = (editedSig, oldSigId) => {
+    this.signatures[oldSigId].title = editedSig.title
+    this.signatures[oldSigId].body = editedSig.body
     this.trigger()
     this._save()
   }

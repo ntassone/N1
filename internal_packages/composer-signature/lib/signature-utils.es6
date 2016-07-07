@@ -1,7 +1,7 @@
 import {RegExpUtils} from 'nylas-exports'
 
 export default {
-  applySignature(body, signature, newDraft) {
+  applySignature(body, signature, {newDraft} = {}) {
     // https://regex101.com/r/nC0qL2/2
     const signatureRegex = RegExpUtils.signatureRegex();
 

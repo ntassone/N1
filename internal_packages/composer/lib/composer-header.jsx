@@ -3,11 +3,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import AccountContactField from './account-contact-field';
 import {Utils, DraftHelpers, Actions, AccountStore} from 'nylas-exports';
-import {InjectedComponent,
-        KeyCommandsRegion,
-        ParticipantsTextField,
-        ListensToFluxStore,
-        } from 'nylas-component-kit';
+import {
+  InjectedComponent,
+  KeyCommandsRegion,
+  ParticipantsTextField,
+  ListensToFluxStore,
+} from 'nylas-component-kit';
 
 import CollapsedParticipants from './collapsed-participants';
 import ComposerHeaderActions from './composer-header-actions';
@@ -283,28 +284,6 @@ export default class ComposerHeader extends React.Component {
 
     return fields;
   }
-
-//   _renderItems = (sig) => {
-//     const MenuItem = Menu.Item
-//     return (
-//       <MenuItem key={sig.id} content={sig.title} />
-//     )
-//   }
-//
-// // get sigs from sig stores
-// // figrue out which is default for the from person
-//   _renderMenu = () => {
-//     const sigs = SignatureStore.getSignatures()
-//     console.log("sigs:", sigs)
-//     return (
-//       <Menu
-//         items={sigs}
-//         itemContent={this._renderItem}
-//         itemKey={sig => sig.id}
-//       />
-//     )
-//   }
-
 
   render() {
     return (

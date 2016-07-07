@@ -8,22 +8,6 @@ export default class SignatureComposerExtension extends ComposerExtension {
     if (!signatureObj) {
       return;
     }
-    draft.body = SignatureUtils.applySignature(draft.body, signatureObj.body, draft.pristine);
-  }
-
-  static applyTransformsToDraft = ({draft}) => {
-    const nextDraft = draft.clone();
-    nextDraft.body = nextDraft.body.replace(/<\/?signature[^>]*>/g, (match) =>
-      `<!-- ${match} -->`
-    );
-    return nextDraft;
-  }
-
-  static unapplyTransformsToDraft = ({draft}) => {
-    const nextDraft = draft.clone();
-    nextDraft.body = nextDraft.body.replace(/<!-- (<\/?signature[^>]*>) -->/g, (match, node) =>
-      node
-    );
-    return nextDraft;
+    draft.body = SignatureUtils.applySignature(draft.body, signatureObj.body, {newDraft: draft.pristine});
   }
 }

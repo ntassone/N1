@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {ButtonDropdown, Menu} from 'nylas-component-kit'
 import ReactDOM from 'react-dom';
+import _ from 'underscore'
 
 /**
 Renders a drop down of items that can have multiple selected
@@ -9,9 +10,9 @@ Item can be string or object
 @param {object} props - props for MultiselectDropdown
 @param {string} props.className - css class applied to the component
 @param {array} props.items - items to be rendered in the dropdown
-@param {array} props.selectedItems - items to be highlighted in the dropdown
-@param {props.onSelectItem} - props.onSelectItem -- add to selectedItems array
-@param {props.onExitSelection} - props.onExitSelection -- function called with selectedItems as first parameter
+@param {props.onSelectItem} - props.itemSelection -- an object containing the boolean selection status for each item
+@param {props.onToggleSelection} - props.onToggleSelection -- function called when an item is clicked
+@param {props.itemKeySelection} - props.itemKeySelection -- function that indicates how to select the key for each MenuItem
 **/
 
 class MultiselectDropdown extends Component {
@@ -22,8 +23,7 @@ class MultiselectDropdown extends Component {
     items: PropTypes.array.isRequired,
     itemSelection: PropTypes.object,
     onToggleItem: PropTypes.func,
-    selectedItemArr: PropTypes.array,
-    itemKeyFunc: PropTypes.func,
+    itemKeySelection: PropTypes.func,
   }
 
   static defaultProps = {
@@ -31,6 +31,7 @@ class MultiselectDropdown extends Component {
     items: [],
     itemSelection: {},
     onToggleItem: () => {},
+    itemKeySelection: () => {},
   }
 
   componentDidUpdate() {
@@ -41,39 +42,34 @@ class MultiselectDropdown extends Component {
 
 
   _onItemClick = (item) => {
-    const accountId = item.id
-    this.props.onToggleItem(accountId)
+    this.props.onToggleItem(item.id)
   }
 
   _renderItem = (item) => {
-    const accounts = this.props.itemSelection
+    const items = this.props.itemSelection
     const MenuItem = Menu.Item
-
     return (
-      <MenuItem onMouseDown={() => this._onItemClick(item)} checked={accounts[item.id]} key={item.accountId} content={item.label} />
+      <MenuItem onMouseDown={() => this._onItemClick(item)} checked={items[item.id]} key={this.props.itemKeySelection(item)} content={item.label} />
     )
   }
 
 
-  _renderMenu= (items, itemKeyFunc) => {
+  _renderMenu= (items) => {
     return (
       <Menu
         items={items}
         itemContent={this._renderItem}
-        itemKey={itemKeyFunc}
+        itemKey={item => item.id}
         onSelect={() => {}}
       />
     )
   }
 
   render() {
-    const {items, itemSelection, itemKeyFunc} = this.props
-    const selectedItemArr = []
-    for (const accountId of Object.keys(itemSelection)) {
-      if (itemSelection[accountId]) selectedItemArr.push(accountId)
-    }
-    const menu = this._renderMenu(items, itemKeyFunc)
-    const buttonText = selectedItemArr.length + (selectedItemArr.length === 1 ? " Account" : " Accounts")
+    const {items, itemSelection} = this.props
+    const numSelected = _.values(_.pick(itemSelection, (val) => { return val === true })).length
+    const menu = this._renderMenu(items)
+    const buttonText = numSelected.toString() + (numSelected === 1 ? " Account" : " Accounts")
     return (
       <ButtonDropdown
         className={'btn-multiselect'}

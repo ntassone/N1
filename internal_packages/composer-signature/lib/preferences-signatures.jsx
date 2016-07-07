@@ -1,5 +1,5 @@
 import React from 'react';
-
+import _ from 'underscore';
 import {
     Flexbox,
     RetinaImg,
@@ -12,9 +12,6 @@ import {AccountStore, SignatureStore, Actions} from 'nylas-exports';
 
 export default class PreferencesSignatures extends React.Component {
   static displayName = 'PreferencesSignatures';
-
-    // Signature schema: {id: {id: id, title: title, body: body, defaultFor: {}}}
-    // DefaultFor schema: {id: true, id: false}
 
   constructor() {
     super()
@@ -44,7 +41,7 @@ export default class PreferencesSignatures extends React.Component {
       signatures: signatures,
       selectedSignature: selected,
       accounts: accounts,
-      editAsHTML: false,
+      editAsHTML: this.state ? this.state.editAsHTML : false,
     }
   }
 
@@ -61,13 +58,20 @@ export default class PreferencesSignatures extends React.Component {
     Actions.removeSignature(signature)
   }
 
-
-  _onEditSignatureTitle = (editedTitle, oldSig) => {
-    Actions.updateSignatureTitle(editedTitle, oldSig)
-  }
-
-  _onEditSignatureBody = (e) => {
-    Actions.updateSignatureBody(e.target.value, this.state.selectedSignature)
+  _onEditSignature = (edit) => {
+    let editedSig;
+    if(typeof edit === "object") {
+      editedSig = {
+        title: this.state.selectedSignature.title,
+        body: edit.target.value,
+      }
+    } else {
+      editedSig = {
+        title: edit,
+        body: this.state.selectedSignature.body,
+      }
+    }
+    Actions.updateSignature(editedSig, this.state.selectedSignature.id)
   }
 
   _onSelectSignature = (sig) => {
@@ -78,26 +82,31 @@ export default class PreferencesSignatures extends React.Component {
     Actions.toggleAccount(accountId)
   }
 
-  _renderListItemContent(sig) {
+  _onToggleEditAsHTML = () => {
+    const toggled = !this.state.editAsHTML
+    this.setState({editAsHTML: toggled})
+  }
+
+  _renderListItemContent = (sig) => {
     return sig.title
   }
 
   _renderSignatureToolbar() {
-    const action = () => {
-      const toggle = !this.state.editAsHTML
-      this.setState({editAsHTML: toggle})
-    };
     return (
       <div className="editable-toolbar">
         <div className="account-picker">
           Default for: {this._renderAccountPicker()}
         </div>
         <div className="render-mode">
-          <input type="checkbox" id="render-mode" checked={this.state.editAsHTML} onClick={action} />
+          <input type="checkbox" id="render-mode" checked={this.state.editAsHTML} onClick={this._onToggleEditAsHTML} />
           <label>Edit raw HTML</label>
         </div>
       </div>
     )
+  }
+
+  _selectItemKey = (item) => {
+    return item.accountId
   }
 
   _renderAccountPicker() {
@@ -107,7 +116,7 @@ export default class PreferencesSignatures extends React.Component {
         items={this.state.accounts}
         itemSelection={this.state.selectedSignature.defaultFor}
         onToggleItem={this._onToggleAccount}
-        itemKeyFunc={item => item.id}
+        itemKeySelection={this._selectItemKey}
       />
     )
   }
@@ -119,7 +128,7 @@ export default class PreferencesSignatures extends React.Component {
         ref="signatureInput"
         value={selectedBody}
         spellcheck={false}
-        onChange={this._onEditSignatureBody}
+        onChange={this._onEditSignature}
       />
     )
   }
@@ -128,13 +137,13 @@ export default class PreferencesSignatures extends React.Component {
     return (
       <textarea
         value={this.state.selectedSignature.body}
-        onChange={this._onEditSignatureBody}
+        onChange={this._onEditSignature}
       />
     );
   }
 
   _renderSignatures() {
-    const sigArr = SignatureStore.objectToArray(this.state.signatures)
+    const sigArr = _.values(this.state.signatures)
     if (sigArr.length === 0) {
       return (
         <div className="empty-list">
@@ -159,7 +168,7 @@ export default class PreferencesSignatures extends React.Component {
           itemContent={this._renderListItemContent}
           onCreateItem={this._onAddSignature}
           onDeleteItem={this._onDeleteSignature}
-          onItemEdited={this._onEditSignatureTitle}
+          onItemEdited={this._onEditSignature}
           onSelectItem={this._onSelectSignature}
           selected={this.state.selectedSignature}
         />

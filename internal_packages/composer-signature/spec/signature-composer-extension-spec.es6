@@ -14,18 +14,6 @@ const TEST_SIGNATURES = {}
 TEST_SIGNATURES[TEST_ID] = TEST_SIGNATURE
 
 describe('SignatureComposerExtension', function signatureComposerExtension() {
-  describe("applyTransformsToDraft", () => {
-    it("should unwrap the signature and remove the custom DOM element", () => {
-      const a = new Message({
-        draft: true,
-        accountId: TEST_ACCOUNT_ID,
-        body: `This is a test! <signature>${TEST_SIGNATURE.body}</signature><div class="gmail_quote">Hello world</div>`,
-      });
-      const out = SignatureComposerExtension.applyTransformsToDraft({draft: a});
-      expect(out.body).toEqual(`This is a test! <!-- <signature> -->${TEST_SIGNATURE.body}<!-- </signature> --><div class="gmail_quote">Hello world</div>`);
-    });
-  });
-
   describe("prepareNewDraft", () => {
     describe("when a signature is defined", () => {
       beforeEach(() => {
